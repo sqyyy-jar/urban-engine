@@ -1,14 +1,16 @@
-use std::alloc::{self, Layout};
+use std::alloc;
 
 use crate::context::Value;
 
-pub struct Stack {
+use super::Stack;
+
+pub struct UnsafeStack {
     pub base: *mut Value,
     pub top: *mut Value,
     pub size: usize,
 }
 
-impl Stack {
+impl UnsafeStack {
     pub fn new(size: usize) -> Self {
         let base =
             unsafe { std::alloc::alloc(alloc::Layout::from_size_align_unchecked(size * 8, 4096)) }
@@ -19,15 +21,19 @@ impl Stack {
             size,
         }
     }
+}
 
-    pub fn push(&mut self, value: Value) {
+impl Stack for UnsafeStack {
+    #[inline(always)]
+    fn push(&mut self, value: Value) {
         unsafe {
             *self.top = value;
             self.top = self.top.add(1);
         }
     }
 
-    pub fn pop(&mut self) -> Value {
+    #[inline(always)]
+    fn pop(&mut self) -> Value {
         unsafe {
             self.top = self.top.sub(1);
             *self.top
@@ -35,12 +41,12 @@ impl Stack {
     }
 }
 
-impl Drop for Stack {
+impl Drop for UnsafeStack {
     fn drop(&mut self) {
         unsafe {
-            std::alloc::dealloc(
+            alloc::dealloc(
                 self.base as _,
-                Layout::from_size_align_unchecked(self.size * 8, 4096),
+                alloc::Layout::from_size_align_unchecked(self.size * 8, 4096),
             );
         }
     }
