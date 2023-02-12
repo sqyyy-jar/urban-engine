@@ -19,145 +19,145 @@ pub trait Context: Sized {
 
     fn set_counter(&mut self, counter: *const u32);
 
-    /// add <X0>, <X1>, <X2>
+    /// `add <X0>, <X1>, <X2>`
     fn add(&mut self, insn: u32);
 
-    /// add <X0>, <X1>, <i16>
+    /// `add <X0>, <X1>, <i16>`
     fn add_imm(&mut self, insn: u32);
 
-    /// addf <X0>, <X1>, <X2>
+    /// `addf <X0>, <X1>, <X2>`
     fn addf(&mut self, insn: u32);
 
-    /// adds <X0>, <X1>, <X2>
+    /// `adds <X0>, <X1>, <X2>`
     fn adds(&mut self, insn: u32);
 
-    /// adds <X0>, <X1>, <i16>
+    /// `adds <X0>, <X1>, <i16>`
     fn adds_imm(&mut self, insn: u32);
 
-    /// and <X0>, <X1>, <X2>
+    /// `and <X0>, <X1>, <X2>`
     fn and(&mut self, insn: u32);
 
-    /// b.eq <X0>, <i21>
+    /// `b.eq <X0>, <i21>`
     fn b_eq_imm(&mut self, insn: u32);
 
-    /// b.ge <X0>, <i21>
+    /// `b.ge <X0>, <i21>`
     fn b_ge_imm(&mut self, insn: u32);
 
-    /// b.gt <X0>, <i21>
+    /// `b.gt <X0>, <i21>`
     fn b_gt_imm(&mut self, insn: u32);
 
-    /// b.le <X0>, <i21>
+    /// `b.le <X0>, <i21>`
     fn b_le_imm(&mut self, insn: u32);
 
-    /// b.lt <X0>, <i21>
+    /// `b.lt <X0>, <i21>`
     fn b_lt_imm(&mut self, insn: u32);
 
-    /// b.nq <X0>, <i21>
+    /// `b.nq <X0>, <i21>`
     fn b_nq_imm(&mut self, insn: u32);
 
-    /// b <i26>
+    /// `b <i26>`
     fn b_imm(&mut self, insn: u32);
 
-    /// bl <i26>
+    /// `bl <i26>`
     fn bl_imm(&mut self, insn: u32);
 
-    /// br <X0>
+    /// `br <X0>`
     fn br(&mut self, insn: u32);
 
-    /// brl <X0>
+    /// `brl <X0>`
     fn brl(&mut self, insn: u32);
 
-    /// div <X0>, <X1>, <X2>
+    /// `div <X0>, <X1>, <X2>`
     fn div(&mut self, insn: u32);
 
-    /// div <X0>, <X1>, <i16>
+    /// `div <X0>, <X1>, <i16>`
     fn div_imm(&mut self, insn: u32);
 
-    /// divf <X0>, <X1>, <X2>
+    /// `divf <X0>, <X1>, <X2>`
     fn divf(&mut self, insn: u32);
 
-    /// divs <X0>, <X1>, <X2>
+    /// `divs <X0>, <X1>, <X2>`
     fn divs(&mut self, insn: u32);
 
-    /// divs <X0>, <X1>, <i16>
+    /// `divs <X0>, <X1>, <i16>`
     fn divs_imm(&mut self, insn: u32);
 
-    /// halt
+    /// `halt`
     fn halt(&mut self, insn: u32);
 
-    /// interrupt <i26>
+    /// `interrupt <i26>`
     fn interrupt_imm(&mut self, insn: u32);
 
-    /// ldr <X0>, <X1>
+    /// `ldr <X0>, <X1>`
     fn ldr(&mut self, insn: u32);
 
-    /// ldr <X0>, <i21>
+    /// `ldr <X0>, <i21>`
     fn ldr_imm(&mut self, insn: u32);
 
-    /// mov <X0>, <X1>
+    /// `mov <X0>, <X1>`
     fn mov(&mut self, insn: u32);
 
-    /// mov <X0>, <i21>
+    /// `mov <X0>, <i21>`
     fn mov_imm(&mut self, insn: u32);
 
-    /// movs <X0>, <i21>
+    /// `movs <X0>, <i21>`
     fn movs_imm(&mut self, insn: u32);
 
-    /// mul <X0>, <X1>, <X2>
+    /// `mul <X0>, <X1>, <X2>`
     fn mul(&mut self, insn: u32);
 
-    /// mul <X0>, <X1>, <i16>
+    /// `mul <X0>, <X1>, <i16>`
     fn mul_imm(&mut self, insn: u32);
 
-    /// mulf <X0>, <X1>, <X2>
+    /// `mulf <X0>, <X1>, <X2>`
     fn mulf(&mut self, insn: u32);
 
-    /// muls <X0>, <X1>, <X2>
+    /// `muls <X0>, <X1>, <X2>`
     fn muls(&mut self, insn: u32);
 
-    /// muls <X0>, <X1>, <i16>
+    /// `muls <X0>, <X1>, <i16>`
     fn muls_imm(&mut self, insn: u32);
 
-    /// nop
+    /// `nop`
     fn nop(&mut self, insn: u32);
 
-    /// not <X0>, <X1>
+    /// `not <X0>, <X1>`
     fn not(&mut self, insn: u32);
 
-    /// or <X0>, <X1>, <X2>
+    /// `or <X0>, <X1>, <X2>`
     fn or(&mut self, insn: u32);
 
-    /// shl <X0>, <X1>, <i16>
+    /// `shl <X0>, <X1>, <i16>`
     fn shl(&mut self, insn: u32);
 
-    /// shr <X0>, <X1>, <i16>
+    /// `shr <X0>, <X1>, <i16>`
     fn shr(&mut self, insn: u32);
 
-    /// shrs <X0>, <X1>, <i16>
+    /// `shrs <X0>, <X1>, <i16>`
     fn shrs(&mut self, insn: u32);
 
-    /// str <X0>, <X1>
+    /// `str <X0>, <X1>`
     fn str(&mut self, insn: u32);
 
-    /// str <X0>, <i21>
+    /// `str <X0>, <i21>`
     fn str_imm(&mut self, insn: u32);
 
-    /// sub <X0>, <X1>, <X2>
+    /// `sub <X0>, <X1>, <X2>`
     fn sub(&mut self, insn: u32);
 
-    /// sub <X0>, <X1>, <i16>
+    /// `sub <X0>, <X1>, <i16>`
     fn sub_imm(&mut self, insn: u32);
 
-    /// subf <X0>, <X1>, <X2>
+    /// `subf <X0>, <X1>, <X2>`
     fn subf(&mut self, insn: u32);
 
-    /// subs <X0>, <X1>, <X2>
+    /// `subs <X0>, <X1>, <X2>`
     fn subs(&mut self, insn: u32);
 
-    /// subs <X0>, <X1>, <i16>
+    /// `subs <X0>, <X1>, <i16>`
     fn subs_imm(&mut self, insn: u32);
 
-    /// xor <X0>, <X1>, <X2>
+    /// `xor <X0>, <X1>, <X2>`
     fn xor(&mut self, insn: u32);
 
     fn decode_instruction(&mut self) {
