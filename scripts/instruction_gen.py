@@ -64,7 +64,7 @@ def gen_insn(value, id):
     registers = value["registers"]
     doc_name = name.replace("_imm", "")
     const_name = name.upper().replace(".", "_").replace("IMM", "IMMEDIATE")
-    res = f"/// {doc_name}"
+    res = f"/// `{doc_name}"
     for i in range(registers):
         if i != 0:
             res += ","
@@ -73,7 +73,7 @@ def gen_insn(value, id):
         if registers > 0:
             res += ","
         res += f" <i{32 - 6 - registers * 5}>"
-    res += "\npub const INSN_"
+    res += "`\npub const INSN_"
     res += const_name
     res += f": u32 = 0b{id:06b}_"
     for _ in range(32 - 6 - registers * 5):
@@ -95,7 +95,7 @@ def gen_trait_functions(value, id):
     name = value["name"]
     registers = value["registers"]
     doc_name = name.replace("_imm", "")
-    res = f"    /// {doc_name}"
+    res = f"    /// `{doc_name}"
     for i in range(registers):
         if i != 0:
             res += ","
@@ -104,7 +104,7 @@ def gen_trait_functions(value, id):
         if registers > 0:
             res += ","
         res += f" <i{32 - 6 - registers * 5}>"
-    res += "\n    fn "
+    res += "`\n    fn "
     res += name.replace(".", "_")
     res += "(&mut self, insn: u32);\n"
     return res
@@ -127,7 +127,7 @@ res = scan()
 # for i, x in enumerate(res):
 #     print(gen_insn(x, i))
 
-# for i, x in enumerate(res):
-#     print(gen_trait_functions(x, i))
+for i, x in enumerate(res):
+    print(gen_trait_functions(x, i))
 
-print(gen_match(res))
+# print(gen_match(res))
