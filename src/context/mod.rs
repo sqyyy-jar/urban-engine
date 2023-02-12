@@ -1,5 +1,6 @@
 pub mod noverify;
 pub mod safe;
+pub mod terminal;
 
 use std::cmp::Ordering;
 
@@ -7,6 +8,7 @@ use crate::asm::*;
 
 #[derive(Clone, Copy)]
 pub union Value {
+    pub size: usize,
     pub uint: u64,
     pub int: i64,
     pub float: f64,
@@ -40,6 +42,9 @@ pub trait Context: Sized {
     /// `and <X0>, <X1>, <X2>`
     fn and(&mut self, insn: u32);
 
+    /// `b <i26>`
+    fn b_imm(&mut self, insn: u32);
+
     /// `b.eq <X0>, <i21>`
     fn b_eq_imm(&mut self, insn: u32);
 
@@ -55,11 +60,8 @@ pub trait Context: Sized {
     /// `b.lt <X0>, <i21>`
     fn b_lt_imm(&mut self, insn: u32);
 
-    /// `b.nq <X0>, <i21>`
+    /// `b.ne <X0>, <i21>`
     fn b_ne_imm(&mut self, insn: u32);
-
-    /// `b <i26>`
-    fn b_imm(&mut self, insn: u32);
 
     /// `bl <i26>`
     fn bl_imm(&mut self, insn: u32);
@@ -131,13 +133,13 @@ pub trait Context: Sized {
     fn or(&mut self, insn: u32);
 
     /// `shl <X0>, <X1>, <i16>`
-    fn shl(&mut self, insn: u32);
+    fn shl_imm(&mut self, insn: u32);
 
     /// `shr <X0>, <X1>, <i16>`
-    fn shr(&mut self, insn: u32);
+    fn shr_imm(&mut self, insn: u32);
 
     /// `shrs <X0>, <X1>, <i16>`
-    fn shrs(&mut self, insn: u32);
+    fn shrs_imm(&mut self, insn: u32);
 
     /// `str <X0>, <X1>`
     fn str(&mut self, insn: u32);
@@ -172,13 +174,13 @@ pub trait Context: Sized {
             INSN_ADDS..=ENDINSN_ADDS => self.adds(insn),
             INSN_ADDS_IMMEDIATE..=ENDINSN_ADDS_IMMEDIATE => self.adds_imm(insn),
             INSN_AND..=ENDINSN_AND => self.and(insn),
+            INSN_B_IMMEDIATE..=ENDINSN_B_IMMEDIATE => self.b_imm(insn),
             INSN_B_EQ_IMMEDIATE..=ENDINSN_B_EQ_IMMEDIATE => self.b_eq_imm(insn),
             INSN_B_GE_IMMEDIATE..=ENDINSN_B_GE_IMMEDIATE => self.b_ge_imm(insn),
             INSN_B_GT_IMMEDIATE..=ENDINSN_B_GT_IMMEDIATE => self.b_gt_imm(insn),
             INSN_B_LE_IMMEDIATE..=ENDINSN_B_LE_IMMEDIATE => self.b_le_imm(insn),
             INSN_B_LT_IMMEDIATE..=ENDINSN_B_LT_IMMEDIATE => self.b_lt_imm(insn),
             INSN_B_NE_IMMEDIATE..=ENDINSN_B_NE_IMMEDIATE => self.b_ne_imm(insn),
-            INSN_B_IMMEDIATE..=ENDINSN_B_IMMEDIATE => self.b_imm(insn),
             INSN_BL_IMMEDIATE..=ENDINSN_BL_IMMEDIATE => self.bl_imm(insn),
             INSN_BR..=ENDINSN_BR => self.br(insn),
             INSN_BRL..=ENDINSN_BRL => self.brl(insn),
@@ -202,9 +204,9 @@ pub trait Context: Sized {
             INSN_NOP..=ENDINSN_NOP => self.nop(insn),
             INSN_NOT..=ENDINSN_NOT => self.not(insn),
             INSN_OR..=ENDINSN_OR => self.or(insn),
-            INSN_SHL..=ENDINSN_SHL => self.shl(insn),
-            INSN_SHR..=ENDINSN_SHR => self.shr(insn),
-            INSN_SHRS..=ENDINSN_SHRS => self.shrs(insn),
+            INSN_SHL_IMMEDIATE..=ENDINSN_SHL_IMMEDIATE => self.shl_imm(insn),
+            INSN_SHR_IMMEDIATE..=ENDINSN_SHR_IMMEDIATE => self.shr_imm(insn),
+            INSN_SHRS_IMMEDIATE..=ENDINSN_SHRS_IMMEDIATE => self.shrs_imm(insn),
             INSN_STR..=ENDINSN_STR => self.str(insn),
             INSN_STR_IMMEDIATE..=ENDINSN_STR_IMMEDIATE => self.str_imm(insn),
             INSN_SUB..=ENDINSN_SUB => self.sub(insn),
