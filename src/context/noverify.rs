@@ -1,14 +1,22 @@
-use std::process::exit;
+use std::{
+    io::{Read, Write},
+    process::exit,
+    slice,
+};
 
-use crate::stack::noverify::UnsafeStack;
+use crate::{
+    int::{INT_READ, INT_WRITE},
+    stack::noverify::UnsafeStack,
+};
 
-use super::{immediate, reg, signed_immediate, Context, Value};
+use super::{immediate, reg, signed_immediate, terminal::Terminal, Context, Value};
 
 pub struct UnsafeContext {
     pub mem_base: *mut u32,
     pub mem: *mut u32,
     pub registers: [Value; 32],
     pub stack: UnsafeStack,
+    pub terminal: Terminal,
 }
 
 impl UnsafeContext {
@@ -18,6 +26,7 @@ impl UnsafeContext {
             mem: cursor,
             registers: [Value { uint: 0 }; 32],
             stack: UnsafeStack::new(stack_size),
+            terminal: Terminal::default(),
         }
     }
 }
@@ -110,6 +119,12 @@ impl Context for UnsafeContext {
     }
 
     #[inline(always)]
+    fn b_imm(&mut self, insn: u32) {
+        let imm = signed_immediate::<26>(insn, 0);
+        self.mem = unsafe { self.mem.offset(imm as _) };
+    }
+
+    #[inline(always)]
     fn b_eq_imm(&mut self, insn: u32) {
         let a = reg(insn, 0);
         let imm = signed_immediate::<21>(insn, 5);
@@ -173,12 +188,6 @@ impl Context for UnsafeContext {
         } else {
             self.advance_counter();
         }
-    }
-
-    #[inline(always)]
-    fn b_imm(&mut self, insn: u32) {
-        let imm = signed_immediate::<26>(insn, 0);
-        self.mem = unsafe { self.mem.offset(imm as _) };
     }
 
     #[inline(always)]
@@ -268,8 +277,60 @@ impl Context for UnsafeContext {
 
     #[inline(always)]
     fn interrupt_imm(&mut self, insn: u32) {
-        let _imm = immediate::<26>(insn, 0);
-        todo!()
+        let imm = immediate::<16>(insn, 0) as u16;
+        match imm {
+            INT_READ => {
+                let fd = unsafe { self.registers[0].uint };
+                let buf = unsafe { (self.mem_base as usize + self.registers[1].size) as *mut u8 };
+                let count = unsafe { self.registers[2].uint };
+                let res = match fd {
+                    0 => self
+                        .terminal
+                        .stdin
+                        .read(unsafe { slice::from_raw_parts_mut(buf, count as _) }),
+                    _ => {
+                        self.registers[0] = Value { int: -1 };
+                        return;
+                    }
+                };
+                match res {
+                    Ok(count) => {
+                        self.registers[0] = Value { size: count };
+                    }
+                    Err(_) => {
+                        self.registers[0] = Value { int: -1 };
+                    }
+                }
+            }
+            INT_WRITE => {
+                let fd = unsafe { self.registers[0].uint };
+                let buf = unsafe { (self.mem_base as usize + self.registers[1].size) as *const u8 };
+                let count = unsafe { self.registers[2].uint };
+                let res = match fd {
+                    1 => self
+                        .terminal
+                        .stdout
+                        .write(unsafe { slice::from_raw_parts(buf, count as _) }),
+                    2 => self
+                        .terminal
+                        .stderr
+                        .write(unsafe { slice::from_raw_parts(buf, count as _) }),
+                    _ => {
+                        self.registers[0] = Value { int: -1 };
+                        return;
+                    }
+                };
+                match res {
+                    Ok(count) => {
+                        self.registers[0] = Value { size: count };
+                    }
+                    Err(_) => {
+                        self.registers[0] = Value { int: -1 };
+                    }
+                }
+            }
+            _ => {}
+        }
     }
 
     #[inline(always)]
@@ -277,7 +338,7 @@ impl Context for UnsafeContext {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
         self.registers[dst] =
-            unsafe { *((self.mem_base as usize + self.registers[a].uint as usize) as *mut _) };
+            unsafe { *((self.mem_base as usize + self.registers[a].size) as *mut _) };
         self.advance_counter();
     }
 
@@ -395,7 +456,7 @@ impl Context for UnsafeContext {
     }
 
     #[inline(always)]
-    fn shl(&mut self, insn: u32) {
+    fn shl_imm(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
         let imm = immediate::<6>(insn, 10);
@@ -406,7 +467,7 @@ impl Context for UnsafeContext {
     }
 
     #[inline(always)]
-    fn shr(&mut self, insn: u32) {
+    fn shr_imm(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
         let imm = immediate::<6>(insn, 10);
@@ -417,7 +478,7 @@ impl Context for UnsafeContext {
     }
 
     #[inline(always)]
-    fn shrs(&mut self, insn: u32) {
+    fn shrs_imm(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
         let imm = immediate::<6>(insn, 10);
@@ -432,8 +493,7 @@ impl Context for UnsafeContext {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
         unsafe {
-            *((self.mem_base as usize + self.registers[dst].uint as usize) as *mut _) =
-                self.registers[a];
+            *((self.mem_base as usize + self.registers[dst].size) as *mut _) = self.registers[a];
         }
         self.advance_counter();
     }
