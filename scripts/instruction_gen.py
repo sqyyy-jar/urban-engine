@@ -40,7 +40,7 @@ instructions = {
     "brl": {"registers": 1, "number-arg": False},
     "bl_imm": {"registers": 0, "number-arg": True},
     "b.eq_imm": {"registers": 1, "number-arg": True},
-    "b.nq_imm": {"registers": 1, "number-arg": True},
+    "b.ne_imm": {"registers": 1, "number-arg": True},
     "b.lt_imm": {"registers": 1, "number-arg": True},
     "b.gt_imm": {"registers": 1, "number-arg": True},
     "b.le_imm": {"registers": 1, "number-arg": True},

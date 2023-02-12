@@ -1,13 +1,16 @@
 pub mod noverify;
 pub mod safe;
 
+use std::cmp::Ordering;
+
 use crate::asm::*;
 
 #[derive(Clone, Copy)]
 pub union Value {
     pub uint: u64,
-    pub int: u64,
+    pub int: i64,
     pub float: f64,
+    pub ord: Ordering,
 }
 
 pub trait Context: Sized {
@@ -15,9 +18,9 @@ pub trait Context: Sized {
 
     fn advance_counter(&mut self);
 
-    fn counter(&mut self) -> *const u32;
+    fn counter(&mut self) -> *mut u32;
 
-    fn set_counter(&mut self, counter: *const u32);
+    fn set_counter(&mut self, counter: *mut u32);
 
     /// `add <X0>, <X1>, <X2>`
     fn add(&mut self, insn: u32);
@@ -53,7 +56,7 @@ pub trait Context: Sized {
     fn b_lt_imm(&mut self, insn: u32);
 
     /// `b.nq <X0>, <i21>`
-    fn b_nq_imm(&mut self, insn: u32);
+    fn b_ne_imm(&mut self, insn: u32);
 
     /// `b <i26>`
     fn b_imm(&mut self, insn: u32);
@@ -174,7 +177,7 @@ pub trait Context: Sized {
             INSN_B_GT_IMMEDIATE..=ENDINSN_B_GT_IMMEDIATE => self.b_gt_imm(insn),
             INSN_B_LE_IMMEDIATE..=ENDINSN_B_LE_IMMEDIATE => self.b_le_imm(insn),
             INSN_B_LT_IMMEDIATE..=ENDINSN_B_LT_IMMEDIATE => self.b_lt_imm(insn),
-            INSN_B_NQ_IMMEDIATE..=ENDINSN_B_NQ_IMMEDIATE => self.b_nq_imm(insn),
+            INSN_B_NE_IMMEDIATE..=ENDINSN_B_NE_IMMEDIATE => self.b_ne_imm(insn),
             INSN_B_IMMEDIATE..=ENDINSN_B_IMMEDIATE => self.b_imm(insn),
             INSN_BL_IMMEDIATE..=ENDINSN_BL_IMMEDIATE => self.bl_imm(insn),
             INSN_BR..=ENDINSN_BR => self.br(insn),
@@ -221,6 +224,11 @@ pub const fn reg(insn: u32, bit_pos: usize) -> usize {
 }
 
 #[inline(always)]
-pub const fn immediate<const BITS: usize>(insn: u32, bit_pos: usize) -> usize {
-    (insn as usize >> bit_pos) & ((1 << (BITS - 1)) - 1)
+pub const fn immediate<const BITS: usize>(insn: u32, bit_pos: usize) -> u64 {
+    (insn as u64 >> bit_pos) & ((1 << BITS) - 1)
+}
+
+#[inline(always)]
+pub const fn signed_immediate<const BITS: usize>(insn: u32, bit_pos: usize) -> i64 {
+    (((((insn >> bit_pos) & ((1 << BITS) - 1)) << (32 - BITS)) as i32) >> (32 - BITS)) as i64
 }
