@@ -2,7 +2,7 @@ pub mod noverify;
 pub mod safe;
 pub mod terminal;
 
-use std::cmp::Ordering;
+use std::{cmp::Ordering, fmt::Debug};
 
 use crate::asm::*;
 
@@ -13,6 +13,12 @@ pub union Value {
     pub int: i64,
     pub float: f64,
     pub ord: Ordering,
+}
+
+impl Debug for Value {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(unsafe { self.uint.to_string().as_str() })
+    }
 }
 
 pub trait Context: Sized {
