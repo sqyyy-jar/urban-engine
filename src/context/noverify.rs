@@ -290,6 +290,7 @@ impl Context for UnsafeContext {
                         .read(unsafe { slice::from_raw_parts_mut(buf, count as _) }),
                     _ => {
                         self.registers[0] = Value { int: -1 };
+                        self.advance_counter();
                         return;
                     }
                 };
@@ -301,6 +302,7 @@ impl Context for UnsafeContext {
                         self.registers[0] = Value { int: -1 };
                     }
                 }
+                self.advance_counter();
             }
             INT_WRITE => {
                 let fd = unsafe { self.registers[0].uint };
@@ -317,6 +319,7 @@ impl Context for UnsafeContext {
                         .write(unsafe { slice::from_raw_parts(buf, count as _) }),
                     _ => {
                         self.registers[0] = Value { int: -1 };
+                        self.advance_counter();
                         return;
                     }
                 };
@@ -328,8 +331,11 @@ impl Context for UnsafeContext {
                         self.registers[0] = Value { int: -1 };
                     }
                 }
+                self.advance_counter();
             }
-            _ => {}
+            _ => {
+                self.advance_counter();
+            }
         }
     }
 
