@@ -51,6 +51,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint + self.registers[b].uint },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -61,6 +62,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint + imm },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -71,6 +73,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             float: unsafe { self.registers[a].float + self.registers[b].float },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -81,6 +84,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             int: unsafe { self.registers[a].int + self.registers[b].int },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -91,6 +95,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             int: unsafe { self.registers[a].int + imm },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -101,6 +106,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint & self.registers[b].uint },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -109,6 +115,8 @@ impl Context for UnsafeContext {
         let imm = signed_immediate::<21>(insn, 5);
         if unsafe { self.registers[a].ord }.is_eq() {
             self.mem = unsafe { self.mem.offset(imm as _) };
+        } else {
+            self.advance_counter();
         }
     }
 
@@ -118,6 +126,8 @@ impl Context for UnsafeContext {
         let imm = signed_immediate::<21>(insn, 5);
         if unsafe { self.registers[a].ord }.is_ge() {
             self.mem = unsafe { self.mem.offset(imm as _) };
+        } else {
+            self.advance_counter();
         }
     }
 
@@ -127,6 +137,8 @@ impl Context for UnsafeContext {
         let imm = signed_immediate::<21>(insn, 5);
         if unsafe { self.registers[a].ord }.is_gt() {
             self.mem = unsafe { self.mem.offset(imm as _) };
+        } else {
+            self.advance_counter();
         }
     }
 
@@ -136,6 +148,8 @@ impl Context for UnsafeContext {
         let imm = signed_immediate::<21>(insn, 5);
         if unsafe { self.registers[a].ord }.is_le() {
             self.mem = unsafe { self.mem.offset(imm as _) };
+        } else {
+            self.advance_counter();
         }
     }
 
@@ -145,6 +159,8 @@ impl Context for UnsafeContext {
         let imm = signed_immediate::<21>(insn, 5);
         if unsafe { self.registers[a].ord }.is_lt() {
             self.mem = unsafe { self.mem.offset(imm as _) };
+        } else {
+            self.advance_counter();
         }
     }
 
@@ -154,6 +170,8 @@ impl Context for UnsafeContext {
         let imm = signed_immediate::<21>(insn, 5);
         if unsafe { self.registers[a].ord }.is_ne() {
             self.mem = unsafe { self.mem.offset(imm as _) };
+        } else {
+            self.advance_counter();
         }
     }
 
@@ -195,6 +213,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint / self.registers[b].uint },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -205,6 +224,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint / imm },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -215,6 +235,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             float: unsafe { self.registers[a].float / self.registers[b].float },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -225,6 +246,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             int: unsafe { self.registers[a].int / self.registers[b].int },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -235,6 +257,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             int: unsafe { self.registers[a].int / imm },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -255,6 +278,7 @@ impl Context for UnsafeContext {
         let a = reg(insn, 0);
         self.registers[dst] =
             unsafe { *((self.mem_base as usize + self.registers[a].uint as usize) as *mut _) };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -262,6 +286,7 @@ impl Context for UnsafeContext {
         let dst = reg(insn, 0);
         let imm = signed_immediate::<21>(insn, 5);
         self.registers[dst] = unsafe { *(self.mem.offset(imm as _) as *mut _) };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -269,6 +294,7 @@ impl Context for UnsafeContext {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
         self.registers[dst] = self.registers[a];
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -276,6 +302,7 @@ impl Context for UnsafeContext {
         let dst = reg(insn, 0);
         let imm = immediate::<21>(insn, 5);
         self.registers[dst] = Value { uint: imm };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -283,6 +310,7 @@ impl Context for UnsafeContext {
         let dst = reg(insn, 0);
         let imm = signed_immediate::<21>(insn, 5);
         self.registers[dst] = Value { int: imm };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -293,6 +321,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint * self.registers[b].uint },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -303,6 +332,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint * imm },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -313,6 +343,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             float: unsafe { self.registers[a].float * self.registers[b].float },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -323,6 +354,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             int: unsafe { self.registers[a].int * self.registers[b].int },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -333,10 +365,13 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             int: unsafe { self.registers[a].int * imm },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
-    fn nop(&mut self, _insn: u32) {}
+    fn nop(&mut self, _insn: u32) {
+        self.advance_counter();
+    }
 
     #[inline(always)]
     fn not(&mut self, insn: u32) {
@@ -345,6 +380,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { !self.registers[a].uint },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -355,6 +391,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint | self.registers[b].uint },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -365,6 +402,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint << imm },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -375,6 +413,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint >> imm },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -385,6 +424,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             int: unsafe { self.registers[a].int >> imm },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -395,6 +435,7 @@ impl Context for UnsafeContext {
             *((self.mem_base as usize + self.registers[dst].uint as usize) as *mut _) =
                 self.registers[a];
         }
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -402,6 +443,7 @@ impl Context for UnsafeContext {
         let a = reg(insn, 0);
         let imm = signed_immediate::<21>(insn, 5);
         unsafe { *(self.mem.offset(imm as _) as *mut _) = self.registers[a] };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -412,6 +454,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint - self.registers[b].uint },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -422,6 +465,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint - imm },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -432,6 +476,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             float: unsafe { self.registers[a].float - self.registers[b].float },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -442,6 +487,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             int: unsafe { self.registers[a].int - self.registers[b].int },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -452,6 +498,7 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             int: unsafe { self.registers[a].int + imm },
         };
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -462,5 +509,6 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint ^ self.registers[b].uint },
         };
+        self.advance_counter();
     }
 }
