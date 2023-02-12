@@ -3,6 +3,7 @@ use context::{noverify::UnsafeContext, Context};
 
 pub mod asm;
 pub mod context;
+pub mod int;
 pub mod rt;
 pub mod stack;
 
