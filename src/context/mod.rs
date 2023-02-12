@@ -230,5 +230,11 @@ pub const fn immediate<const BITS: usize>(insn: u32, bit_pos: usize) -> u64 {
 
 #[inline(always)]
 pub const fn signed_immediate<const BITS: usize>(insn: u32, bit_pos: usize) -> i64 {
-    (((((insn >> bit_pos) & ((1 << BITS) - 1)) << (32 - BITS)) as i32) >> (32 - BITS)) as i64
+    let value = (insn >> bit_pos) & ((1 << BITS) - 1);
+    if ((value >> (BITS - 1)) & 1) != 0 {
+        (value | (!0) << BITS) as i32 as _
+    } else {
+        value as _
+    }
+    // (((((insn >> bit_pos) & ((1 << BITS) - 1)) << (32 - BITS)) as i32) >> (32 - BITS)) as i64
 }
