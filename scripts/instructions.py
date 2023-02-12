@@ -1,0 +1,57 @@
+instructions = {
+    "not": {"registers": 2, "number-arg": False},
+    "add": {"registers": 3, "number-arg": False},
+    "add_imm": {"registers": 2, "number-arg": True},
+    "sub": {"registers": 3, "number-arg": False},
+    "sub_imm": {"registers": 2, "number-arg": True},
+    "mul": {"registers": 3, "number-arg": False},
+    "mul_imm": {"registers": 2, "number-arg": True},
+    "div": {"registers": 3, "number-arg": False},
+    "div_imm": {"registers": 2, "number-arg": True},
+    "adds": {"registers": 3, "number-arg": False},
+    "adds_imm": {"registers": 2, "number-arg": True},
+    "subs": {"registers": 3, "number-arg": False},
+    "subs_imm": {"registers": 2, "number-arg": True},
+    "muls": {"registers": 3, "number-arg": False},
+    "muls_imm": {"registers": 2, "number-arg": True},
+    "divs": {"registers": 3, "number-arg": False},
+    "divs_imm": {"registers": 2, "number-arg": True},
+    "addf": {"registers": 3, "number-arg": False},
+    "subf": {"registers": 3, "number-arg": False},
+    "mulf": {"registers": 3, "number-arg": False},
+    "divf": {"registers": 3, "number-arg": False},
+    "and": {"registers": 3, "number-arg": False},
+    "or": {"registers": 3, "number-arg": False},
+    "xor": {"registers": 3, "number-arg": False},
+    "shl": {"registers": 2, "number-arg": True},
+    "shr": {"registers": 2, "number-arg": True},
+    "shrs": {"registers": 2, "number-arg": True},
+    "ldr": {"registers": 2, "number-arg": False},
+    "ldr_imm": {"registers": 1, "number-arg": True},
+    "str": {"registers": 2, "number-arg": False},
+    "str_imm": {"registers": 1, "number-arg": True},
+    "mov": {"registers": 2, "number-arg": False},
+    "mov_imm": {"registers": 1, "number-arg": True},
+    "movs_imm": {"registers": 1, "number-arg": True},
+    "br": {"registers": 1, "number-arg": False},
+    "b_imm": {"registers": 0, "number-arg": True},
+    "brl": {"registers": 1, "number-arg": False},
+    "bl_imm": {"registers": 0, "number-arg": True},
+    "b.eq_imm": {"registers": 1, "number-arg": True},
+    "b.ne_imm": {"registers": 1, "number-arg": True},
+    "b.lt_imm": {"registers": 1, "number-arg": True},
+    "b.gt_imm": {"registers": 1, "number-arg": True},
+    "b.le_imm": {"registers": 1, "number-arg": True},
+    "b.ge_imm": {"registers": 1, "number-arg": True},
+    "nop": {"registers": 0, "number-arg": False},
+    "halt": {"registers": 0, "number-arg": False},
+    "interrupt_imm": {"registers": 0, "number-arg": True},
+}
+
+
+def mapped():
+    all = []
+    for key, value in instructions.items():
+        value["name"] = key
+        all.append(value)
+    return sorted(all, key=lambda it: it["name"])
