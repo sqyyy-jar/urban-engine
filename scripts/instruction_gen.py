@@ -4,19 +4,21 @@ from instructions import mapped
 def gen_insn(value, id):
     name = value["name"]
     registers = value["registers"]
-    doc_name = name.replace("_imm", "")
+    number_arg = value["number-arg"]
     const_name = name.upper().replace(".", "_").replace("IMM", "IMMEDIATE")
-    res = f"/// `{doc_name}"
+    res = f"/// `{name}"
     for i in range(registers):
         if i != 0:
             res += ","
         res += f" <X{i}>"
-    if value["number-arg"]:
+    if number_arg:
         if registers > 0:
             res += ","
         res += f" <i{32 - 6 - registers * 5}>"
     res += "`\npub const INSN_"
     res += const_name
+    if number_arg:
+        res += "_IMMEDIATE"
     res += f": u32 = 0b{id:06b}_"
     for _ in range(32 - 6 - registers * 5):
         res += "0"
@@ -24,6 +26,8 @@ def gen_insn(value, id):
         res += "_00000"
     res += ";\npub const ENDINSN_"
     res += const_name
+    if number_arg:
+        res += "_IMMEDIATE"
     res += f": u32 = 0b{id:06b}_"
     for _ in range(32 - 6 - registers * 5):
         res += "1"
