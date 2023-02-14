@@ -67,7 +67,7 @@ impl Context for UnsafeContext {
     fn add_imm(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
-        let imm = immediate::<16>(insn, 10);
+        let imm = immediate::<17>(insn, 10);
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint + imm },
         };
@@ -100,7 +100,7 @@ impl Context for UnsafeContext {
     fn adds_imm(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
-        let imm = signed_immediate::<16>(insn, 10);
+        let imm = signed_immediate::<17>(insn, 10);
         self.registers[dst] = Value {
             int: unsafe { self.registers[a].int + imm },
         };
@@ -120,14 +120,14 @@ impl Context for UnsafeContext {
 
     #[inline(always)]
     fn b_imm(&mut self, insn: u32) {
-        let imm = signed_immediate::<26>(insn, 0);
+        let imm = signed_immediate::<27>(insn, 0);
         self.mem = unsafe { self.mem.offset(imm as _) };
     }
 
     #[inline(always)]
     fn b_eq_imm(&mut self, insn: u32) {
         let a = reg(insn, 0);
-        let imm = signed_immediate::<21>(insn, 5);
+        let imm = signed_immediate::<22>(insn, 5);
         if unsafe { self.registers[a].ord }.is_eq() {
             self.mem = unsafe { self.mem.offset(imm as _) };
         } else {
@@ -138,7 +138,7 @@ impl Context for UnsafeContext {
     #[inline(always)]
     fn b_ge_imm(&mut self, insn: u32) {
         let a = reg(insn, 0);
-        let imm = signed_immediate::<21>(insn, 5);
+        let imm = signed_immediate::<22>(insn, 5);
         if unsafe { self.registers[a].ord }.is_ge() {
             self.mem = unsafe { self.mem.offset(imm as _) };
         } else {
@@ -149,7 +149,7 @@ impl Context for UnsafeContext {
     #[inline(always)]
     fn b_gt_imm(&mut self, insn: u32) {
         let a = reg(insn, 0);
-        let imm = signed_immediate::<21>(insn, 5);
+        let imm = signed_immediate::<22>(insn, 5);
         if unsafe { self.registers[a].ord }.is_gt() {
             self.mem = unsafe { self.mem.offset(imm as _) };
         } else {
@@ -160,7 +160,7 @@ impl Context for UnsafeContext {
     #[inline(always)]
     fn b_le_imm(&mut self, insn: u32) {
         let a = reg(insn, 0);
-        let imm = signed_immediate::<21>(insn, 5);
+        let imm = signed_immediate::<22>(insn, 5);
         if unsafe { self.registers[a].ord }.is_le() {
             self.mem = unsafe { self.mem.offset(imm as _) };
         } else {
@@ -171,7 +171,7 @@ impl Context for UnsafeContext {
     #[inline(always)]
     fn b_lt_imm(&mut self, insn: u32) {
         let a = reg(insn, 0);
-        let imm = signed_immediate::<21>(insn, 5);
+        let imm = signed_immediate::<22>(insn, 5);
         if unsafe { self.registers[a].ord }.is_lt() {
             self.mem = unsafe { self.mem.offset(imm as _) };
         } else {
@@ -182,7 +182,7 @@ impl Context for UnsafeContext {
     #[inline(always)]
     fn b_ne_imm(&mut self, insn: u32) {
         let a = reg(insn, 0);
-        let imm = signed_immediate::<21>(insn, 5);
+        let imm = signed_immediate::<22>(insn, 5);
         if unsafe { self.registers[a].ord }.is_ne() {
             self.mem = unsafe { self.mem.offset(imm as _) };
         } else {
@@ -192,7 +192,7 @@ impl Context for UnsafeContext {
 
     #[inline(always)]
     fn bl_imm(&mut self, insn: u32) {
-        let imm = signed_immediate::<26>(insn, 0);
+        let imm = signed_immediate::<27>(insn, 0);
         self.registers[30] = Value {
             uint: (self.mem as usize - self.mem_base as usize) as _,
         };
@@ -229,7 +229,7 @@ impl Context for UnsafeContext {
     fn div_imm(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
-        let imm = immediate::<16>(insn, 10);
+        let imm = immediate::<17>(insn, 10);
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint / imm },
         };
@@ -262,7 +262,7 @@ impl Context for UnsafeContext {
     fn divs_imm(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
-        let imm = signed_immediate::<16>(insn, 10);
+        let imm = signed_immediate::<17>(insn, 10);
         self.registers[dst] = Value {
             int: unsafe { self.registers[a].int / imm },
         };
@@ -351,7 +351,7 @@ impl Context for UnsafeContext {
     #[inline(always)]
     fn ldr_imm(&mut self, insn: u32) {
         let dst = reg(insn, 0);
-        let imm = signed_immediate::<21>(insn, 5);
+        let imm = signed_immediate::<22>(insn, 5);
         self.registers[dst] = unsafe { *(self.mem.offset(imm as _) as *mut _) };
         self.advance_counter();
     }
@@ -367,7 +367,7 @@ impl Context for UnsafeContext {
     #[inline(always)]
     fn mov_imm(&mut self, insn: u32) {
         let dst = reg(insn, 0);
-        let imm = immediate::<21>(insn, 5);
+        let imm = immediate::<22>(insn, 5);
         self.registers[dst] = Value { uint: imm };
         self.advance_counter();
     }
@@ -375,7 +375,7 @@ impl Context for UnsafeContext {
     #[inline(always)]
     fn movs_imm(&mut self, insn: u32) {
         let dst = reg(insn, 0);
-        let imm = signed_immediate::<21>(insn, 5);
+        let imm = signed_immediate::<22>(insn, 5);
         self.registers[dst] = Value { int: imm };
         self.advance_counter();
     }
@@ -395,7 +395,7 @@ impl Context for UnsafeContext {
     fn mul_imm(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
-        let imm = immediate::<16>(insn, 10);
+        let imm = immediate::<17>(insn, 10);
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint * imm },
         };
@@ -428,7 +428,7 @@ impl Context for UnsafeContext {
     fn muls_imm(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
-        let imm = signed_immediate::<16>(insn, 10);
+        let imm = signed_immediate::<17>(insn, 10);
         self.registers[dst] = Value {
             int: unsafe { self.registers[a].int * imm },
         };
@@ -465,7 +465,7 @@ impl Context for UnsafeContext {
     fn shl_imm(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
-        let imm = immediate::<6>(insn, 10);
+        let imm = immediate::<7>(insn, 10);
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint << imm },
         };
@@ -476,7 +476,7 @@ impl Context for UnsafeContext {
     fn shr_imm(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
-        let imm = immediate::<6>(insn, 10);
+        let imm = immediate::<7>(insn, 10);
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint >> imm },
         };
@@ -487,7 +487,7 @@ impl Context for UnsafeContext {
     fn shrs_imm(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
-        let imm = immediate::<6>(insn, 10);
+        let imm = immediate::<7>(insn, 10);
         self.registers[dst] = Value {
             int: unsafe { self.registers[a].int >> imm },
         };
@@ -507,7 +507,7 @@ impl Context for UnsafeContext {
     #[inline(always)]
     fn str_imm(&mut self, insn: u32) {
         let a = reg(insn, 0);
-        let imm = signed_immediate::<21>(insn, 5);
+        let imm = signed_immediate::<22>(insn, 5);
         unsafe { *(self.mem.offset(imm as _) as *mut _) = self.registers[a] };
         self.advance_counter();
     }
@@ -527,7 +527,7 @@ impl Context for UnsafeContext {
     fn sub_imm(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
-        let imm = immediate::<16>(insn, 10);
+        let imm = immediate::<17>(insn, 10);
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint - imm },
         };
@@ -560,7 +560,7 @@ impl Context for UnsafeContext {
     fn subs_imm(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
-        let imm = signed_immediate::<16>(insn, 10);
+        let imm = signed_immediate::<17>(insn, 10);
         self.registers[dst] = Value {
             int: unsafe { self.registers[a].int + imm },
         };
