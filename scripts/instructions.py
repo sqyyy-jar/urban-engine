@@ -1,56 +1,71 @@
-instructions = [
-    {"name": "not", "registers": 2, "number-arg": False},
-    {"name": "add", "registers": 3, "number-arg": False},
-    {"name": "add", "registers": 2, "number-arg": True},
-    {"name": "sub", "registers": 3, "number-arg": False},
-    {"name": "sub", "registers": 2, "number-arg": True},
-    {"name": "mul", "registers": 3, "number-arg": False},
-    {"name": "mul", "registers": 2, "number-arg": True},
-    {"name": "div", "registers": 3, "number-arg": False},
-    {"name": "div", "registers": 2, "number-arg": True},
-    {"name": "adds", "registers": 3, "number-arg": False},
-    {"name": "adds", "registers": 2, "number-arg": True},
-    {"name": "subs", "registers": 3, "number-arg": False},
-    {"name": "subs", "registers": 2, "number-arg": True},
-    {"name": "muls", "registers": 3, "number-arg": False},
-    {"name": "muls", "registers": 2, "number-arg": True},
-    {"name": "divs", "registers": 3, "number-arg": False},
-    {"name": "divs", "registers": 2, "number-arg": True},
-    {"name": "addf", "registers": 3, "number-arg": False},
-    {"name": "subf", "registers": 3, "number-arg": False},
-    {"name": "mulf", "registers": 3, "number-arg": False},
-    {"name": "divf", "registers": 3, "number-arg": False},
-    {"name": "and", "registers": 3, "number-arg": False},
-    {"name": "or", "registers": 3, "number-arg": False},
-    {"name": "xor", "registers": 3, "number-arg": False},
-    {"name": "shl", "registers": 2, "number-arg": True},
-    {"name": "shr", "registers": 2, "number-arg": True},
-    {"name": "shrs", "registers": 2, "number-arg": True},
-    {"name": "ldr", "registers": 2, "number-arg": False},
-    {"name": "ldr", "registers": 1, "number-arg": True},
-    {"name": "str", "registers": 2, "number-arg": False},
-    {"name": "str", "registers": 1, "number-arg": True},
-    {"name": "mov", "registers": 2, "number-arg": False},
-    {"name": "mov", "registers": 1, "number-arg": True},
-    {"name": "movs", "registers": 1, "number-arg": True},
-    {"name": "br", "registers": 1, "number-arg": False},
-    {"name": "b", "registers": 0, "number-arg": True},
-    {"name": "brl", "registers": 1, "number-arg": False},
-    {"name": "bl", "registers": 0, "number-arg": True},
-    {"name": "b.eq", "registers": 1, "number-arg": True},
-    {"name": "b.ne", "registers": 1, "number-arg": True},
-    {"name": "b.lt", "registers": 1, "number-arg": True},
-    {"name": "b.gt", "registers": 1, "number-arg": True},
-    {"name": "b.le", "registers": 1, "number-arg": True},
-    {"name": "b.ge", "registers": 1, "number-arg": True},
-    {"name": "nop", "registers": 0, "number-arg": False},
-    {"name": "halt", "registers": 0, "number-arg": False},
-    {"name": "interrupt", "registers": 0, "number-arg": True},
+l1_instructions = [
+    {"name": "add", "registers": 2, "size": 17},
+    {"name": "sub", "registers": 2, "size": 17},
+    {"name": "mul", "registers": 2, "size": 17},
+    {"name": "div", "registers": 2, "size": 17},
+    {"name": "adds", "registers": 2, "size": -17},
+    {"name": "subs", "registers": 2, "size": -17},
+    {"name": "muls", "registers": 2, "size": -17},
+    {"name": "divs", "registers": 2, "size": -17},
+    {"name": "ldr", "registers": 1, "size": -22},
+    {"name": "str", "registers": 1, "size": -22},
+    {"name": "mov", "registers": 1, "size": 22},
+    {"name": "movs", "registers": 1, "size": -22},
+    {"name": "b", "registers": 0, "size": -27},
+    {"name": "bl", "registers": 0, "size": -27},
+    {"name": "b.eq", "registers": 1, "size": -22},
+    {"name": "b.ne", "registers": 1, "size": -22},
+    {"name": "b.lt", "registers": 1, "size": -22},
+    {"name": "b.gt", "registers": 1, "size": -22},
+    {"name": "b.le", "registers": 1, "size": -22},
+    {"name": "b.ge", "registers": 1, "size": -22},
+]
+
+l2_instructions = [
+    {"name": "not", "registers": 2, "size": 0},
+    {"name": "add", "registers": 3, "size": 0},
+    {"name": "sub", "registers": 3, "size": 0},
+    {"name": "mul", "registers": 3, "size": 0},
+    {"name": "div", "registers": 3, "size": 0},
+    {"name": "adds", "registers": 3, "size": 0},
+    {"name": "subs", "registers": 3, "size": 0},
+    {"name": "muls", "registers": 3, "size": 0},
+    {"name": "divs", "registers": 3, "size": 0},
+    {"name": "addf", "registers": 3, "size": 0},
+    {"name": "subf", "registers": 3, "size": 0},
+    {"name": "mulf", "registers": 3, "size": 0},
+    {"name": "divf", "registers": 3, "size": 0},
+    {"name": "and", "registers": 3, "size": 0},
+    {"name": "or", "registers": 3, "size": 0},
+    {"name": "xor", "registers": 3, "size": 0},
+    {"name": "shl", "registers": 2, "size": 7},
+    {"name": "shr", "registers": 2, "size": 7},
+    {"name": "shrs", "registers": 2, "size": 7},
+    {"name": "ldr", "registers": 2, "size": 0},
+    {"name": "str", "registers": 2, "size": 0},
+    {"name": "mov", "registers": 2, "size": 0},
+    {"name": "br", "registers": 1, "size": 0},
+    {"name": "brl", "registers": 1, "size": 0},
+    {"name": "nop", "registers": 0, "size": 0},
+    {"name": "halt", "registers": 0, "size": 0},
+    {"name": "interrupt", "registers": 0, "size": 16},
 ]
 
 
+def map_insn(insn, index):
+    if insn["size"] < 0:
+        insn["size"] = abs(insn["size"])
+        insn["signed"] = True
+    else:
+        insn["signed"] = False
+    insn["index"] = index
+
+
 def mapped():
-    res = sorted(instructions, key=lambda it: it["name"])
-    for i, elem in enumerate(res):
-        elem["index"] = i
-    return res
+    l1 = sorted(l1_instructions, key=lambda it: it["name"])
+    l2 = sorted(l2_instructions, key=lambda it: it["name"])
+    for i, elem in enumerate(l1):
+        map_insn(elem, i)
+    for i, elem in enumerate(l2):
+        map_insn(elem, i)
+    return (l1, l2)

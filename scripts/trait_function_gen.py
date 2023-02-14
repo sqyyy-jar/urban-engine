@@ -1,26 +1,28 @@
+from sys import stdout
 from instructions import mapped
+from instruction_gen import gen_documentation
 
 
-def gen_trait_functions(value):
-    name = value["name"]
-    registers = value["registers"]
-    number_arg = value["number-arg"]
-    res = f"    /// `{name}"
-    for i in range(registers):
-        if i != 0:
-            res += ","
-        res += f" <X{i}>"
-    if number_arg:
-        if registers > 0:
-            res += ","
-        res += f" <i{32 - 6 - registers * 5}>"
-    res += "`\n    fn "
-    res += name.replace(".", "_")
-    if number_arg:
-        res += "_imm"
-    res += "(&mut self, insn: u32);\n"
-    return res
+def mangle_function_name(name: str, size: int) -> str:
+    if size > 0:
+        return f"{name.replace('.', '_')}_imm"
+    else:
+        return name.replace(".", "_")
 
 
-for x in mapped():
-    print(gen_trait_functions(x))
+def gen_trait_functions(insn):
+    name = insn["name"]
+    registers = insn["registers"]
+    size = insn["size"]
+    signed = insn["signed"]
+    function_name = mangle_function_name(name, size)
+    gen_documentation(stdout, name, registers, size, signed)
+    print(f"fn {function_name}(&mut self, insn: u32);\n")
+
+
+if __name__ == "__main__":
+    layers = mapped()
+    insns = layers[0]
+    insns.extend(layers[1])
+    for insn in insns:
+        gen_trait_functions(insn)
