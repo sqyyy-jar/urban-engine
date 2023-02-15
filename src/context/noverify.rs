@@ -8,6 +8,7 @@ use std::{
 use crate::{
     int::{INT_READ, INT_WRITE},
     stack::noverify::UnsafeStack,
+    vmod::VMod,
 };
 
 use super::{immediate, reg, signed_immediate, terminal::Terminal, Context, Value};
@@ -55,6 +56,10 @@ impl Context for UnsafeContext {
     #[inline(always)]
     fn set_counter(&mut self, counter: *mut u32) {
         self.mem = counter;
+    }
+
+    fn load_vmod(&mut self, vmod: &impl VMod<Self>) {
+        vmod.load(&mut self.vtable);
     }
 
     #[inline(always)]
@@ -199,7 +204,7 @@ impl Context for UnsafeContext {
     fn bl_imm(&mut self, insn: u32) {
         let imm = signed_immediate::<27>(insn, 0);
         self.registers[30] = Value {
-            uint: (self.mem as usize - self.mem_base as usize) as _,
+            uint: (self.mem as usize - self.mem_base as usize + 4) as _,
         };
         self.mem = unsafe { self.mem.offset(imm as _) };
     }
@@ -214,7 +219,7 @@ impl Context for UnsafeContext {
     fn brl(&mut self, insn: u32) {
         let a = reg(insn, 0);
         self.registers[30] = Value {
-            uint: (self.mem as usize - self.mem_base as usize) as _,
+            uint: (self.mem as usize - self.mem_base as usize + 4) as _,
         };
         self.mem = (self.mem_base as usize + unsafe { self.registers[a].uint } as usize) as _;
     }

@@ -4,7 +4,7 @@ pub mod terminal;
 
 use std::{cmp::Ordering, fmt::Debug};
 
-use crate::asm::*;
+use crate::{asm::*, vmod::VMod};
 
 #[derive(Clone, Copy)]
 pub union Value {
@@ -30,6 +30,8 @@ pub trait Context: Sized {
     fn counter(&mut self) -> *mut u32;
 
     fn set_counter(&mut self, counter: *mut u32);
+
+    fn load_vmod(&mut self, vmod: &impl VMod<Self>);
 
     /// `add X0, X1, u17`
     fn add_imm(&mut self, insn: u32);
