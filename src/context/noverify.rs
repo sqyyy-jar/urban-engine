@@ -62,6 +62,14 @@ impl Context for UnsafeContext {
         vmod.load(&mut self.vtable);
     }
 
+    fn panic(&mut self) -> ! {
+        eprintln!("Runtime paniced:");
+        for (i, reg) in self.registers.iter().enumerate() {
+            eprintln!(" R{i}: 0x{:032X}", unsafe { reg.uint });
+        }
+        exit(-1)
+    }
+
     #[inline(always)]
     fn add(&mut self, insn: u32) {
         let dst = reg(insn, 10);

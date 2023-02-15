@@ -33,6 +33,8 @@ pub trait Context: Sized {
 
     fn load_vmod(&mut self, vmod: &impl VMod<Self>);
 
+    fn panic(&mut self) -> !;
+
     /// `add X0, X1, u17`
     fn add_imm(&mut self, insn: u32);
 
@@ -256,9 +258,7 @@ pub trait Context: Sized {
             INSN_SUBS..=ENDINSN_SUBS => self.subs(insn),
             INSN_VCALL_IMMEDIATE..=ENDINSN_VCALL_IMMEDIATE => self.vcall_imm(insn),
             INSN_XOR..=ENDINSN_XOR => self.xor(insn),
-            _ => {
-                panic!()
-            }
+            _ => self.panic(),
         }
     }
 }
