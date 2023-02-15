@@ -113,7 +113,7 @@ def gen_register_modifications(registers: int, size: int) -> str:
         res += f"opc |= (reg{i} & {hex(0b11111)}) << {(registers - i - 1) * 5};\n"
     if size > 0:
         if registers == 0:
-            res += f"opc |= (int) immediate & {hex(0b11111)};\n"
+            res += f"opc |= (int) immediate & {hex((1 << size) - 1)};\n"
             return res
         res += (
             f"opc |= ((int) immediate & {hex((1 << size) - 1)}) << {registers * 5};\n"
