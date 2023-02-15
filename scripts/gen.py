@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import instruction_gen
 import interrupt_gen
 

@@ -2,6 +2,18 @@ from typing import Any
 from instructions import mapped
 
 
+layer2_name_mappings = {
+    "ldr": "ldr",
+    "str": "str",
+    "ldrb": "ldr_byte",
+    "ldrh": "ldr_half",
+    "ldrw": "ldr_word",
+    "strb": "str_byte",
+    "strh": "str_half",
+    "strw": "str_word",
+}
+
+
 def gen_insn_(file, insn: dict[str, Any], layered: bool):
     name = insn["name"]
     registers = insn["registers"]
@@ -32,7 +44,7 @@ def gen_documentation(file, name: str, registers: int, size: int, signed: bool):
 def gen_start_constant(
     file, name: str, registers: int, layered: bool, index: int, size: int
 ):
-    mangled_name = mangle_name(name, size)
+    mangled_name = mangle_name(name, size, layered)
     mid_bits = 27 - registers * 5 - size
     if layered:
         mid_bits -= 6
@@ -56,7 +68,7 @@ def gen_start_constant(
 def gen_end_constant(
     file, name: str, registers: int, layered: bool, index: int, size: int
 ):
-    mangled_name = mangle_name(name, size)
+    mangled_name = mangle_name(name, size, layered)
     mid_bits = 27 - registers * 5 - size
     if layered:
         mid_bits -= 6
@@ -77,7 +89,9 @@ def gen_end_constant(
     print(";", file=file)
 
 
-def mangle_name(name: str, size: int) -> str:
+def mangle_name(name: str, size: int, layered: bool) -> str:
+    if layered and name in layer2_name_mappings:
+        return layer2_name_mappings[name].upper()
     if size == 0:
         return name.replace(".", "_").upper()
     else:

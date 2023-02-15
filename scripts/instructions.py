@@ -41,8 +41,14 @@ l2_instructions = [
     {"name": "shl", "registers": 2, "size": 7},
     {"name": "shr", "registers": 2, "size": 7},
     {"name": "shrs", "registers": 2, "size": 7},
-    {"name": "ldr", "registers": 2, "size": 0},
-    {"name": "str", "registers": 2, "size": 0},
+    {"name": "ldr", "registers": 2, "size": -11},
+    {"name": "ldrb", "registers": 2, "size": -11},
+    {"name": "ldrh", "registers": 2, "size": -11},
+    {"name": "ldrw", "registers": 2, "size": -11},
+    {"name": "str", "registers": 2, "size": -11},
+    {"name": "strb", "registers": 2, "size": -11},
+    {"name": "strh", "registers": 2, "size": -11},
+    {"name": "strw", "registers": 2, "size": -11},
     {"name": "mov", "registers": 2, "size": 0},
     {"name": "br", "registers": 1, "size": 0},
     {"name": "brl", "registers": 1, "size": 0},
@@ -52,20 +58,21 @@ l2_instructions = [
 ]
 
 
-def map_insn(insn, index):
+def map_insn(insn, index: int, layered: bool):
     if insn["size"] < 0:
         insn["size"] = abs(insn["size"])
         insn["signed"] = True
     else:
         insn["signed"] = False
     insn["index"] = index
+    insn["layered"] = layered
 
 
 def mapped():
     l1 = sorted(l1_instructions, key=lambda it: it["name"])
     l2 = sorted(l2_instructions, key=lambda it: it["name"])
     for i, elem in enumerate(l1):
-        map_insn(elem, i)
+        map_insn(elem, i, False)
     for i, elem in enumerate(l2):
-        map_insn(elem, i)
+        map_insn(elem, i, True)
     return (l1, l2)

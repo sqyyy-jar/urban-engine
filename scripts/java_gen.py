@@ -29,6 +29,16 @@ class_name_mappings = {
     "subs": "SubSigned",
 }
 method_name_mappings = {}
+layer2_class_name_mappings = {
+    "ldr": "Load",
+    "ldrb": "LoadByte",
+    "ldrh": "LoadHalf",
+    "ldrw": "LoadWord",
+    "str": "Store",
+    "strb": "StoreByte",
+    "strh": "StoreHalf",
+    "strw": "StoreWord",
+}
 
 
 def write(insn, layered: bool):
@@ -37,7 +47,7 @@ def write(insn, layered: bool):
     registers = insn["registers"]
     size = insn["size"]
     index = insn["index"]
-    class_name = map_class_name(name, size)
+    class_name = map_class_name(name, size, layered)
     with open(f"gen/{class_name}.java", "w") as file:
         write_class(file, class_name, registers, size, index, layered)
 
@@ -96,11 +106,15 @@ def gen_register_modifications(registers: int, size: int) -> str:
         if registers == 0:
             res += f"opc |= (int) immediate & {hex(0b11111)};\n"
             return res
-        res += f"opc |= ((int) immediate & {hex((1 << size) - 1)}) << {registers * 5};\n"
+        res += (
+            f"opc |= ((int) immediate & {hex((1 << size) - 1)}) << {registers * 5};\n"
+        )
     return res.rstrip()
 
 
-def map_class_name(name: str, size: int) -> str:
+def map_class_name(name: str, size: int, layered: bool) -> str:
+    if layered and name in layer2_class_name_mappings:
+        return layer2_class_name_mappings[name]
     if name in class_name_mappings:
         if size > 0:
             return class_name_mappings[name] + "Immediate"
