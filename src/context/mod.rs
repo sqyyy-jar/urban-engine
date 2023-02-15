@@ -148,6 +148,9 @@ pub trait Context: Sized {
     /// `muls X0, X1, X2`
     fn muls(&mut self, insn: u32);
 
+    /// `ncall u21`
+    fn ncall_imm(&mut self, insn: u32);
+
     /// `nop`
     fn nop(&mut self, insn: u32);
 
@@ -186,6 +189,9 @@ pub trait Context: Sized {
 
     /// `subs X0, X1, X2`
     fn subs(&mut self, insn: u32);
+
+    /// `vcall u21`
+    fn vcall_imm(&mut self, insn: u32);
 
     /// `xor X0, X1, X2`
     fn xor(&mut self, insn: u32);
@@ -232,6 +238,7 @@ pub trait Context: Sized {
             INSN_MUL..=ENDINSN_MUL => self.mul(insn),
             INSN_MULF..=ENDINSN_MULF => self.mulf(insn),
             INSN_MULS..=ENDINSN_MULS => self.muls(insn),
+            INSN_NCALL_IMMEDIATE..=ENDINSN_NCALL_IMMEDIATE => self.ncall_imm(insn),
             INSN_NOP..=ENDINSN_NOP => self.nop(insn),
             INSN_NOT..=ENDINSN_NOT => self.not(insn),
             INSN_OR..=ENDINSN_OR => self.or(insn),
@@ -245,6 +252,7 @@ pub trait Context: Sized {
             INSN_SUB..=ENDINSN_SUB => self.sub(insn),
             INSN_SUBF..=ENDINSN_SUBF => self.subf(insn),
             INSN_SUBS..=ENDINSN_SUBS => self.subs(insn),
+            INSN_VCALL_IMMEDIATE..=ENDINSN_VCALL_IMMEDIATE => self.vcall_imm(insn),
             INSN_XOR..=ENDINSN_XOR => self.xor(insn),
             _ => {
                 panic!()

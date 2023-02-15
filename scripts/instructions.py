@@ -55,6 +55,8 @@ l2_instructions = [
     {"name": "nop", "registers": 0, "size": 0},
     {"name": "halt", "registers": 0, "size": 0},
     {"name": "interrupt", "registers": 0, "size": 16},
+    {"name": "ncall", "registers": 0, "size": 21},
+    {"name": "vcall", "registers": 0, "size": 21},
 ]
 
 

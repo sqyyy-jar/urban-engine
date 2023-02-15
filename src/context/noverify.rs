@@ -1,4 +1,5 @@
 use std::{
+    collections::HashMap,
     io::{Read, Write},
     process::exit,
     slice,
@@ -17,6 +18,8 @@ pub struct UnsafeContext {
     pub registers: [Value; 32],
     pub stack: UnsafeStack,
     pub terminal: Terminal,
+    pub ntable: Vec<fn(&mut Self)>,
+    pub vtable: HashMap<usize, fn(&mut Self)>,
 }
 
 impl UnsafeContext {
@@ -27,6 +30,8 @@ impl UnsafeContext {
             registers: [Value { uint: 0 }; 32],
             stack: UnsafeStack::new(stack_size),
             terminal: Terminal::default(),
+            ntable: Vec::with_capacity(0),
+            vtable: HashMap::with_capacity(0),
         }
     }
 }
@@ -350,6 +355,7 @@ impl Context for UnsafeContext {
         self.advance_counter();
     }
 
+    #[inline(always)]
     fn ldr_byte(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
@@ -360,6 +366,7 @@ impl Context for UnsafeContext {
         self.advance_counter();
     }
 
+    #[inline(always)]
     fn ldr_half(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
@@ -370,6 +377,7 @@ impl Context for UnsafeContext {
         self.advance_counter();
     }
 
+    #[inline(always)]
     fn ldr_word(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
@@ -538,6 +546,7 @@ impl Context for UnsafeContext {
         self.advance_counter();
     }
 
+    #[inline(always)]
     fn str_byte(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
@@ -549,6 +558,7 @@ impl Context for UnsafeContext {
         self.advance_counter();
     }
 
+    #[inline(always)]
     fn str_half(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
@@ -560,6 +570,7 @@ impl Context for UnsafeContext {
         self.advance_counter();
     }
 
+    #[inline(always)]
     fn str_word(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
@@ -642,6 +653,26 @@ impl Context for UnsafeContext {
         self.registers[dst] = Value {
             uint: unsafe { self.registers[a].uint ^ self.registers[b].uint },
         };
+        self.advance_counter();
+    }
+
+    #[inline(always)]
+    fn ncall_imm(&mut self, insn: u32) {
+        let imm = immediate::<21>(insn, 0);
+        let Some(func) = self.ntable.get(imm as usize) else {
+            panic!("Tried to ncall position 0x{imm:x}");
+        };
+        func(self);
+        self.advance_counter();
+    }
+
+    #[inline(always)]
+    fn vcall_imm(&mut self, insn: u32) {
+        let imm = immediate::<21>(insn, 0) as usize;
+        let Some(func) = self.vtable.get(&imm) else {
+            panic!("Tried to vcall id 0x{imm:x}");
+        };
+        func(self);
         self.advance_counter();
     }
 }
