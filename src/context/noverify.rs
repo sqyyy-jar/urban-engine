@@ -343,8 +343,40 @@ impl Context for UnsafeContext {
     fn ldr(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
-        self.registers[dst] =
-            unsafe { *((self.mem_base as usize + self.registers[a].size) as *mut _) };
+        let imm = signed_immediate::<11>(insn, 10);
+        self.registers[dst] = unsafe {
+            *((self.mem_base as isize + self.registers[a].isize + imm as isize) as *mut _)
+        };
+        self.advance_counter();
+    }
+
+    fn ldr_byte(&mut self, insn: u32) {
+        let dst = reg(insn, 5);
+        let a = reg(insn, 0);
+        let imm = signed_immediate::<11>(insn, 10);
+        self.registers[dst].uint = unsafe {
+            *((self.mem_base as isize + self.registers[a].isize + imm as isize) as *mut u8)
+        } as _;
+        self.advance_counter();
+    }
+
+    fn ldr_half(&mut self, insn: u32) {
+        let dst = reg(insn, 5);
+        let a = reg(insn, 0);
+        let imm = signed_immediate::<11>(insn, 10);
+        self.registers[dst].uint = unsafe {
+            *((self.mem_base as isize + self.registers[a].isize + imm as isize) as *mut u16)
+        } as _;
+        self.advance_counter();
+    }
+
+    fn ldr_word(&mut self, insn: u32) {
+        let dst = reg(insn, 5);
+        let a = reg(insn, 0);
+        let imm = signed_immediate::<11>(insn, 10);
+        self.registers[dst].uint = unsafe {
+            *((self.mem_base as isize + self.registers[a].isize + imm as isize) as *mut u32)
+        } as _;
         self.advance_counter();
     }
 
@@ -498,8 +530,43 @@ impl Context for UnsafeContext {
     fn str(&mut self, insn: u32) {
         let dst = reg(insn, 5);
         let a = reg(insn, 0);
+        let imm = signed_immediate::<11>(insn, 10);
         unsafe {
-            *((self.mem_base as usize + self.registers[dst].size) as *mut _) = self.registers[a];
+            *((self.mem_base as isize + self.registers[dst].isize + imm as isize) as *mut _) =
+                self.registers[a];
+        }
+        self.advance_counter();
+    }
+
+    fn str_byte(&mut self, insn: u32) {
+        let dst = reg(insn, 5);
+        let a = reg(insn, 0);
+        let imm = signed_immediate::<11>(insn, 10);
+        unsafe {
+            *((self.mem_base as isize + self.registers[dst].isize + imm as isize) as *mut u8) =
+                self.registers[a].uint as u8;
+        }
+        self.advance_counter();
+    }
+
+    fn str_half(&mut self, insn: u32) {
+        let dst = reg(insn, 5);
+        let a = reg(insn, 0);
+        let imm = signed_immediate::<11>(insn, 10);
+        unsafe {
+            *((self.mem_base as isize + self.registers[dst].isize + imm as isize) as *mut u16) =
+                self.registers[a].uint as u16;
+        }
+        self.advance_counter();
+    }
+
+    fn str_word(&mut self, insn: u32) {
+        let dst = reg(insn, 5);
+        let a = reg(insn, 0);
+        let imm = signed_immediate::<11>(insn, 10);
+        unsafe {
+            *((self.mem_base as isize + self.registers[dst].isize + imm as isize) as *mut u32) =
+                self.registers[a].uint as u32;
         }
         self.advance_counter();
     }

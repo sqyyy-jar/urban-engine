@@ -9,6 +9,7 @@ use crate::asm::*;
 #[derive(Clone, Copy)]
 pub union Value {
     pub size: usize,
+    pub isize: isize,
     pub uint: u64,
     pub int: i64,
     pub float: f64,
@@ -123,8 +124,17 @@ pub trait Context: Sized {
     /// `interrupt u16`
     fn interrupt_imm(&mut self, insn: u32);
 
-    /// `ldr X0, X1`
+    /// `ldr X0, X1, i11`
     fn ldr(&mut self, insn: u32);
+
+    /// `ldrb X0, X1, i11`
+    fn ldr_byte(&mut self, insn: u32);
+
+    /// `ldrh X0, X1, i11`
+    fn ldr_half(&mut self, insn: u32);
+
+    /// `ldrw X0, X1, i11`
+    fn ldr_word(&mut self, insn: u32);
 
     /// `mov X0, X1`
     fn mov(&mut self, insn: u32);
@@ -156,8 +166,17 @@ pub trait Context: Sized {
     /// `shrs X0, X1, u7`
     fn shrs_imm(&mut self, insn: u32);
 
-    /// `str X0, X1`
+    /// `str X0, X1, i11`
     fn str(&mut self, insn: u32);
+
+    /// `strb X0, X1, i11`
+    fn str_byte(&mut self, insn: u32);
+
+    /// `strh X0, X1, i11`
+    fn str_half(&mut self, insn: u32);
+
+    /// `strw X0, X1, i11`
+    fn str_word(&mut self, insn: u32);
 
     /// `sub X0, X1, X2`
     fn sub(&mut self, insn: u32);
@@ -206,6 +225,9 @@ pub trait Context: Sized {
             INSN_HALT..=ENDINSN_HALT => self.halt(insn),
             INSN_INTERRUPT_IMMEDIATE..=ENDINSN_INTERRUPT_IMMEDIATE => self.interrupt_imm(insn),
             INSN_LDR..=ENDINSN_LDR => self.ldr(insn),
+            INSN_LDR_BYTE..=ENDINSN_LDR_BYTE => self.ldr_byte(insn),
+            INSN_LDR_HALF..=ENDINSN_LDR_HALF => self.ldr_half(insn),
+            INSN_LDR_WORD..=ENDINSN_LDR_WORD => self.ldr_word(insn),
             INSN_MOV..=ENDINSN_MOV => self.mov(insn),
             INSN_MUL..=ENDINSN_MUL => self.mul(insn),
             INSN_MULF..=ENDINSN_MULF => self.mulf(insn),
@@ -217,6 +239,9 @@ pub trait Context: Sized {
             INSN_SHR_IMMEDIATE..=ENDINSN_SHR_IMMEDIATE => self.shr_imm(insn),
             INSN_SHRS_IMMEDIATE..=ENDINSN_SHRS_IMMEDIATE => self.shrs_imm(insn),
             INSN_STR..=ENDINSN_STR => self.str(insn),
+            INSN_STR_BYTE..=ENDINSN_STR_BYTE => self.str_byte(insn),
+            INSN_STR_HALF..=ENDINSN_STR_HALF => self.str_half(insn),
+            INSN_STR_WORD..=ENDINSN_STR_WORD => self.str_word(insn),
             INSN_SUB..=ENDINSN_SUB => self.sub(insn),
             INSN_SUBF..=ENDINSN_SUBF => self.subf(insn),
             INSN_SUBS..=ENDINSN_SUBS => self.subs(insn),
