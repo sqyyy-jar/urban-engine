@@ -7,7 +7,6 @@ use std::{
 
 use crate::{
     int::{INT_READ, INT_WRITE},
-    stack::noverify::UnsafeStack,
     vmod::VMod,
 };
 
@@ -17,19 +16,17 @@ pub struct UnsafeContext {
     pub mem_base: *mut u32,
     pub mem: *mut u32,
     pub registers: [Value; 32],
-    pub stack: UnsafeStack,
     pub terminal: Terminal,
     pub ntable: Vec<fn(&mut Self)>,
     pub vtable: HashMap<usize, fn(&mut Self)>,
 }
 
 impl UnsafeContext {
-    pub fn new(mem_base: *mut u32, cursor: *mut u32, stack_size: usize) -> Self {
+    pub fn new(mem_base: *mut u32, cursor: *mut u32) -> Self {
         Self {
             mem_base,
             mem: cursor,
             registers: [Value { uint: 0 }; 32],
-            stack: UnsafeStack::new(stack_size),
             terminal: Terminal::default(),
             ntable: Vec::with_capacity(0),
             vtable: HashMap::with_capacity(0),
@@ -58,11 +55,15 @@ impl Context for UnsafeContext {
         self.mem = counter;
     }
 
+    fn has_halted(&self) -> bool {
+        false
+    }
+
     fn load_vmod(&mut self, vmod: &impl VMod<Self>) {
         vmod.load(&mut self.vtable);
     }
 
-    fn panic(&mut self) -> ! {
+    fn panic(&mut self, _error_code: u32) -> ! {
         eprintln!("Runtime paniced:");
         for (i, reg) in self.registers.iter().enumerate() {
             eprintln!(" R{i}: 0x{:032X}", unsafe { reg.uint });

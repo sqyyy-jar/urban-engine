@@ -4,7 +4,7 @@ pub mod terminal;
 
 use std::{cmp::Ordering, fmt::Debug};
 
-use crate::{asm::*, vmod::VMod};
+use crate::{asm::*, err::ERR_ILLEGAL_INSN, vmod::VMod};
 
 #[derive(Clone, Copy)]
 pub union Value {
@@ -31,9 +31,11 @@ pub trait Context: Sized {
 
     fn set_counter(&mut self, counter: *mut u32);
 
+    fn has_halted(&self) -> bool;
+
     fn load_vmod(&mut self, vmod: &impl VMod<Self>);
 
-    fn panic(&mut self) -> !;
+    fn panic(&mut self, error_code: u32) -> !;
 
     /// `add X0, X1, u17`
     fn add_imm(&mut self, insn: u32);
@@ -258,7 +260,7 @@ pub trait Context: Sized {
             INSN_SUBS..=ENDINSN_SUBS => self.subs(insn),
             INSN_VCALL_IMMEDIATE..=ENDINSN_VCALL_IMMEDIATE => self.vcall_imm(insn),
             INSN_XOR..=ENDINSN_XOR => self.xor(insn),
-            _ => self.panic(),
+            _ => self.panic(ERR_ILLEGAL_INSN),
         }
     }
 }
