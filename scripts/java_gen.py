@@ -38,6 +38,8 @@ layer2_class_name_mappings = {
     "strb": "StoreByte",
     "strh": "StoreHalf",
     "strw": "StoreWord",
+    "ncall": "NativeCall",
+    "vcall": "VirtualCall",
 }
 
 
@@ -63,9 +65,7 @@ import com.github.sqyyy.urban.assembler.Instruction;
 public record {class_name}({gen_fields(registers, size)}) implements Instruction {{
     @Override
     public int write() {{
-        int opc = {gen_opc(index, layered)};
-{indent(gen_register_modifications(registers, size), " " * 8)}
-        return opc;
+{indent(gen_inner(index, layered, registers, size), " " * 8)}
     }}
 }}""",
         file=file,
@@ -82,6 +82,15 @@ def gen_fields(registers: int, size: int) -> str:
         if len(res) > 0:
             res += ", "
         res += f"long immediate"
+    return res
+
+
+def gen_inner(index: int, layered: bool, registers: int, size: int) -> str:
+    if registers == 0 and size == 0:
+        return f"return {gen_opc(index, layered)};"
+    res = f"int opc = {gen_opc(index, layered)};\n"
+    res += gen_register_modifications(registers, size)
+    res += "return opc;"
     return res
 
 
@@ -109,7 +118,7 @@ def gen_register_modifications(registers: int, size: int) -> str:
         res += (
             f"opc |= ((int) immediate & {hex((1 << size) - 1)}) << {registers * 5};\n"
         )
-    return res.rstrip()
+    return res
 
 
 def map_class_name(name: str, size: int, layered: bool) -> str:
