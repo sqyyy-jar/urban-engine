@@ -234,6 +234,39 @@ impl Context for UnsafeContext {
     }
 
     #[inline(always)]
+    fn cmp(&mut self, insn: u32) {
+        let dst = reg(insn, 10);
+        let a = reg(insn, 5);
+        let b = reg(insn, 0);
+        self.registers[dst] = Value {
+            ord: unsafe { self.registers[a].uint.cmp(&self.registers[b].uint) },
+        };
+        self.advance_counter();
+    }
+
+    #[inline(always)]
+    fn cmpf(&mut self, insn: u32) {
+        let dst = reg(insn, 10);
+        let a = reg(insn, 5);
+        let b = reg(insn, 0);
+        self.registers[dst] = Value {
+            ord: unsafe { self.registers[a].int.cmp(&self.registers[b].int) },
+        };
+        self.advance_counter();
+    }
+
+    #[inline(always)]
+    fn cmps(&mut self, insn: u32) {
+        let dst = reg(insn, 10);
+        let a = reg(insn, 5);
+        let b = reg(insn, 0);
+        self.registers[dst] = Value {
+            ord: unsafe { self.registers[a].float.total_cmp(&self.registers[b].float) },
+        };
+        self.advance_counter();
+    }
+
+    #[inline(always)]
     fn div(&mut self, insn: u32) {
         let dst = reg(insn, 10);
         let a = reg(insn, 5);

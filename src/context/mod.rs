@@ -115,6 +115,15 @@ pub trait Context: Sized {
     /// `brl X0`
     fn brl(&mut self, insn: u32);
 
+    /// `cmp X0, X1, X2`
+    fn cmp(&mut self, insn: u32);
+
+    /// `cmpf X0, X1, X2`
+    fn cmpf(&mut self, insn: u32);
+
+    /// `cmps X0, X1, X2`
+    fn cmps(&mut self, insn: u32);
+
     /// `div X0, X1, X2`
     fn div(&mut self, insn: u32);
 
@@ -231,6 +240,9 @@ pub trait Context: Sized {
             INSN_AND..=ENDINSN_AND => self.and(insn),
             INSN_BR..=ENDINSN_BR => self.br(insn),
             INSN_BRL..=ENDINSN_BRL => self.brl(insn),
+            INSN_CMP..=ENDINSN_CMP => self.cmp(insn),
+            INSN_CMPF..=ENDINSN_CMPF => self.cmpf(insn),
+            INSN_CMPS..=ENDINSN_CMPS => self.cmps(insn),
             INSN_DIV..=ENDINSN_DIV => self.div(insn),
             INSN_DIVF..=ENDINSN_DIVF => self.divf(insn),
             INSN_DIVS..=ENDINSN_DIVS => self.divs(insn),
