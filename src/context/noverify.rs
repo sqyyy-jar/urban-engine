@@ -6,6 +6,7 @@ use std::{
 };
 
 use crate::{
+    err::{ERR_ILLEGAL_INSN, ERR_ILLEGAL_MEMORY_ACCESS},
     int::{INT_READ, INT_WRITE},
     vmod::VMod,
 };
@@ -63,10 +64,35 @@ impl Context for UnsafeContext {
         vmod.load(&mut self.vtable);
     }
 
-    fn panic(&mut self, _error_code: u32) -> ! {
+    fn panic(&mut self, error_code: u32) -> ! {
         eprintln!("Runtime paniced:");
-        for (i, reg) in self.registers.iter().enumerate() {
-            eprintln!(" R{i}: 0x{:032X}", unsafe { reg.uint });
+        for (i, reg) in self.registers.chunks(2).enumerate() {
+            eprintln!(
+                " R{:<2}: 0x{:016X} | R{:<2}: 0x{:016X}",
+                i * 2,
+                unsafe { reg[0].uint },
+                i * 2 + 1,
+                unsafe { reg[1].uint }
+            );
+        }
+        match error_code {
+            ERR_ILLEGAL_INSN => {
+                eprintln!();
+                eprintln!(
+                    "Illegal instruction at address {:?}: 0x{:08X}",
+                    (self.mem as isize - self.mem_base as isize) as *mut u32,
+                    unsafe { *self.mem }
+                );
+            }
+            ERR_ILLEGAL_MEMORY_ACCESS => {
+                eprintln!();
+                eprintln!(
+                    "Illegal memory access in instruction at  address {:?}: 0x{:08X}",
+                    (self.mem as isize - self.mem_base as isize) as *mut u32,
+                    unsafe { *self.mem }
+                );
+            }
+            _ => {}
         }
         exit(-1)
     }
