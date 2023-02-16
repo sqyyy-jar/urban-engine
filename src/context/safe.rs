@@ -38,9 +38,8 @@ impl SafeContext {
         }
     }
 
-    #[allow(clippy::not_unsafe_ptr_arg_deref)]
     #[inline(always)]
-    pub fn load<T: Copy>(&mut self, address: *mut T) -> T {
+    pub fn check_memory_access(&mut self, address: *mut ()) {
         if self.mem_base > address as _ {
             self.panic(ERR_ILLEGAL_MEMORY_ACCESS);
         }
@@ -48,19 +47,19 @@ impl SafeContext {
         if base_offset >= self.mem_size {
             self.panic(ERR_ILLEGAL_MEMORY_ACCESS);
         }
+    }
+
+    #[allow(clippy::not_unsafe_ptr_arg_deref)]
+    #[inline(always)]
+    pub fn load<T: Copy>(&mut self, address: *mut T) -> T {
+        self.check_memory_access(address as _);
         unsafe { *address }
     }
 
     #[allow(clippy::not_unsafe_ptr_arg_deref)]
     #[inline(always)]
     pub fn store<T: Copy>(&mut self, address: *mut T, value: T) {
-        if self.mem_base > address as _ {
-            self.panic(ERR_ILLEGAL_MEMORY_ACCESS);
-        }
-        let base_offset = address as usize - self.mem_base as usize;
-        if base_offset >= self.mem_size {
-            self.panic(ERR_ILLEGAL_MEMORY_ACCESS);
-        }
+        self.check_memory_access(address as _);
         unsafe { *address = value }
     }
 }
@@ -71,11 +70,9 @@ impl Context for SafeContext {
     }
 
     fn advance_counter(&mut self) {
-        let base_offset = self.mem as usize - self.mem_base as usize;
-        if base_offset >= self.mem_size {
-            self.panic(ERR_ILLEGAL_MEMORY_ACCESS);
-        }
-        self.mem = unsafe { self.mem.add(1) };
+        let counter = unsafe { self.mem.add(1) };
+        self.check_memory_access(counter as _);
+        self.mem = counter;
     }
 
     fn counter(&mut self) -> *mut u32 {
@@ -83,13 +80,7 @@ impl Context for SafeContext {
     }
 
     fn set_counter(&mut self, counter: *mut u32) {
-        if self.mem_base > counter {
-            self.panic(ERR_ILLEGAL_MEMORY_ACCESS);
-        }
-        let base_offset = counter as usize - self.mem_base as usize;
-        if base_offset >= self.mem_size {
-            self.panic(ERR_ILLEGAL_MEMORY_ACCESS);
-        }
+        self.check_memory_access(counter as _);
         self.mem = counter;
     }
 
@@ -106,7 +97,7 @@ impl Context for SafeContext {
         eprintln!("Runtime paniced:");
         for (i, reg) in self.registers.chunks(2).enumerate() {
             eprintln!(
-                " R{:02}: 0x{:064X} | R{:02}: 0x{:064X}",
+                " R{:<2}: 0x{:016X} | R{:<2}: 0x{:016X}",
                 i * 2,
                 unsafe { reg[0].uint },
                 i * 2 + 1,
@@ -117,16 +108,16 @@ impl Context for SafeContext {
             ERR_ILLEGAL_INSN => {
                 eprintln!();
                 eprintln!(
-                    "Illegal instruction at address {:?}: 0x{:032X}",
-                    self.mem,
+                    "Illegal instruction at address {:?}: 0x{:08X}",
+                    (self.mem as isize - self.mem_base as isize) as *mut u32,
                     unsafe { *self.mem }
                 );
             }
             ERR_ILLEGAL_MEMORY_ACCESS => {
                 eprintln!();
                 eprintln!(
-                    "Illegal memory access in instruction at  address {:?}: 0x{:032X}",
-                    self.mem,
+                    "Illegal memory access in instruction at  address {:?}: 0x{:08X}",
+                    (self.mem as isize - self.mem_base as isize) as *mut u32,
                     unsafe { *self.mem }
                 );
             }
@@ -391,19 +382,19 @@ impl Context for SafeContext {
 
     #[inline(always)]
     fn halt(&mut self, _insn: u32) {
-        println!("Halted");
-        exit(0);
+        self.halted = true;
     }
 
     #[inline(always)]
     fn interrupt_imm(&mut self, insn: u32) {
-        // TODO safety
         let imm = immediate::<16>(insn, 0) as u16;
         match imm {
             INT_READ => {
                 let fd = unsafe { self.registers[0].uint };
                 let buf = unsafe { (self.mem_base as usize + self.registers[1].size) as *mut u8 };
+                self.check_memory_access(buf as _);
                 let count = unsafe { self.registers[2].uint };
+                self.check_memory_access(unsafe { buf.add(count as _) } as _);
                 let res = match fd {
                     0 => self
                         .terminal
@@ -428,7 +419,9 @@ impl Context for SafeContext {
             INT_WRITE => {
                 let fd = unsafe { self.registers[0].uint };
                 let buf = unsafe { (self.mem_base as usize + self.registers[1].size) as *const u8 };
+                self.check_memory_access(buf as _);
                 let count = unsafe { self.registers[2].uint };
+                self.check_memory_access(unsafe { buf.add(count as _) } as _);
                 let res = match fd {
                     1 => self
                         .terminal

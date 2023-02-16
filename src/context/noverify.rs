@@ -349,7 +349,6 @@ impl Context for UnsafeContext {
 
     #[inline(always)]
     fn halt(&mut self, _insn: u32) {
-        println!("Halted");
         exit(0);
     }
 
