@@ -51,7 +51,7 @@ fn main() {
                     content.as_mut_ptr() as _,
                     content.len(),
                 );
-                // ctx.load_vmod(&Util);
+                ctx.load_vmod(&Util);
                 while !ctx.has_halted() {
                     ctx.decode_instruction()
                 }
