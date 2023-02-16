@@ -30,6 +30,9 @@ class_name_mappings = {
 }
 method_name_mappings = {}
 layer2_class_name_mappings = {
+    "cmp": "Compare",
+    "cmps": "CompareSigned",
+    "cmpf": "CompareFloat",
     "ldr": "Load",
     "ldrb": "LoadByte",
     "ldrh": "LoadHalf",
