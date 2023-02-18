@@ -110,14 +110,49 @@ def parse_fun():
   advance();
   if !has_token() || peek_token() != LEFT_PAREN:
     raise "Invalid function";
-  # TODO: implement constant expression parsing
-  parse_const_expr();
+  params = [];
+  while has_token():
+    if peek_token() != VAR:
+      raise "Invalid function parameters";
+    advance();
+    type = parse_type();
+    if !has_token() || peek_token() != IDENT:
+      raise "Invalid function parameters";
+    param_name = peek_token();
+    advance();
+    params.push(Param(type, param_name));
+    if !has_token():
+      raise "Invalid function parameters";
+    next = peek_token();
+    match next:
+      RIGHT_PAREN:
+        advance();
+        break;
+      COMMA:
+        advance();
+        continue;
+      else:
+        raise "Invalid function parameters";
+  if !has_next():
+    raise "Invalid function";
+  next = peek_token();
+  # TODO: arrow return type
+  match next:
+    SEMICOLON:
+      if !extern:
+        raise "Invalid function";
+      advance();
+      return Fun(name, inline, extern, params);
+    LEFT_BRACE:
+      advance();
+  # TODO: parse body
 ```
 
 ## Type
 
 ```py
 def parse_type():
+  # TODO: parse without surrounding brackets
   if !has_token() || peek_token() != LEFT_BRACKET:
     raise "Invalid type parameter";
   advance();
@@ -193,3 +228,11 @@ def parse_type():
 * Is mutable
 * Only in non-root level
 * Allows non-constant expression assignment
+
+## Functions
+
+`EXTERN? INLINE? FUN IDENT LEFT_PAREN ((VAR LEFT_BRACKET TYPE RIGHT_BRACKET
+IDENT COMMA)* VAR LEFT_BRACKET TYPE RIGHT_BRACKET IDENT)? RIGHT_PAREN
+(ARROW TYPE)? LEFT_BRACE BODY RIGHT_BRACE`
+
+* Does not require return type
