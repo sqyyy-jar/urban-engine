@@ -236,3 +236,33 @@ IDENT COMMA)* VAR LEFT_BRACKET TYPE RIGHT_BRACKET IDENT)? RIGHT_PAREN
 (ARROW TYPE)? LEFT_BRACE BODY RIGHT_BRACE`
 
 * Does not require return type
+
+## Expression
+
+* Either:
+  * A function call
+  * A literal
+  * An S-Expression
+
+### Function call:
+
+`IDENT LEFT_PAREN ((EXPR COMMA)* EXPR)? RIGHT_PAREN`
+
+```
+static(16)
+```
+
+### Literal
+
+```
+1
+2u
+3.0
+"Hello"
+```
+
+### S-Expression
+
+```
+{(+ 8 (static 16))}
+```
