@@ -7,7 +7,7 @@ use std::{
 
 pub type Span = Range<usize>;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Token {
     /// `var`
     Var { span: Span },
