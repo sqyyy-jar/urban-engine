@@ -5,8 +5,11 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.1.6", features = ["cargo"] }
-full_moon = "0.17"
+rslua = "0.2"
 phf = { version = "0.11", features = ["macros"] }
+ariadne = "0.1"
+anyhow = "1.0"
+thiserror = "1.0"
 
 [[bin]]
 name = "urban"
