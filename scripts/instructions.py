@@ -1,4 +1,7 @@
-# TODO: b_ldr_imm
+# TODO
+# * Add combination of load and branch to loaded address
+# * Add register-based bitshift operations
+# * Migrate Python scripts to C#
 
 l1_instructions = [
     {"name": "add", "registers": 2, "size": 17},
