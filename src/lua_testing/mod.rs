@@ -1,64 +1,16 @@
-use std::io::Write;
+pub mod root_funcs;
+
+use std::io::{Error, ErrorKind, Result, Write};
 
 use full_moon::{
     ast::{
-        Assignment, BinOp, Call, Expression, FunctionArgs, FunctionCall, FunctionDeclaration,
-        Parameter, Prefix, Stmt, Suffix, UnOp, Value, Var,
+        Assignment, BinOp, Expression, FunctionCall, FunctionDeclaration, Parameter, Prefix, Stmt,
+        UnOp, Value, Var,
     },
     tokenizer::TokenType,
 };
-use phf::{phf_map, Map};
 
-/// Functions that can be called in the root level
-pub const ROOT_FUNCS: Map<&'static str, fn(&mut Binary, &FunctionCall)> = phf_map! {
-    // "" => |_| {},
-};
-/// Functions that can be called in constants in the root level
-pub const ROOT_ASSIGN_FUNCS: Map<&'static str, fn(&mut Binary, &FunctionCall) -> ConstValue> = phf_map! {
-    "u" => |_, call| {
-        let mut args = call.suffixes();
-        let arg = args.next().expect("Arg");
-        if args.next().is_some() {
-            panic!("More than one arg");
-        }
-        match arg {
-            Suffix::Call(call) => {
-                let args = match call {
-                    Call::AnonymousCall(args) => args,
-                    Call::MethodCall(call) => call.args(),
-                    _ => unreachable!(),
-                };
-                match args {
-                    FunctionArgs::Parentheses {
-                        parentheses: _,
-                        arguments,
-                    } => {
-                        if arguments.len() > 1 {
-                            panic!("More than one arg");
-                        }
-                        let arg = arguments.iter().next().unwrap();
-                        match arg {
-                            Expression::Value { value } => match value.as_ref() {
-                                Value::Number(num) => {
-                                    let TokenType::Number { text } = num.token_type() else {
-                                        unreachable!();
-                                    };
-                                    ConstValue::UInt {
-                                        value: text.parse().expect("uint"),
-                                    }
-                                }
-                                _ => unimplemented!(),
-                            },
-                            _ => unimplemented!(),
-                        }
-                    }
-                    _ => unimplemented!(),
-                }
-            }
-            _ => panic!("expected call"),
-        }
-    },
-};
+use self::root_funcs::{ROOT_ASSIGN_FUNCS, ROOT_FUNCS};
 
 #[derive(Debug)]
 pub struct Binary {
@@ -89,16 +41,15 @@ pub struct Func {
     pub param_count: usize,
 }
 
-pub fn parse(source: &str, _outfile: &mut impl Write) {
+pub fn parse(source: &str, _outfile: &mut impl Write) -> Result<()> {
     let result = full_moon::parse(source);
     if let Err(err) = result {
-        eprintln!("Lua parsing error: {}", err);
-        return;
+        return Err(Error::new(ErrorKind::Other, err));
     }
     let mut binary = Binary::default();
     for element in result.unwrap().nodes().stmts() {
         match element {
-            Stmt::Assignment(assignment) => parse_const_assignment(&mut binary, assignment),
+            Stmt::Assignment(assignment) => parse_const_assignment(&mut binary, assignment)?,
             Stmt::FunctionCall(call) => parse_const_call(&mut binary, call),
             Stmt::FunctionDeclaration(func) => parse_function(&mut binary, func),
             Stmt::LocalAssignment(_) => unimplemented!("Local elements"),
@@ -106,9 +57,10 @@ pub fn parse(source: &str, _outfile: &mut impl Write) {
             _ => panic!("Unsupported element at root level: {element}"),
         }
     }
+    Ok(())
 }
 
-fn parse_const_assignment(binary: &mut Binary, assignment: &Assignment) {
+fn parse_const_assignment(binary: &mut Binary, assignment: &Assignment) -> Result<()> {
     if assignment.variables().is_empty() || assignment.expressions().is_empty() {
         panic!("Invalid assignment");
     }
@@ -122,9 +74,10 @@ fn parse_const_assignment(binary: &mut Binary, assignment: &Assignment) {
         Var::Name(name_token) => name_token.token().to_string(),
         _ => unreachable!(),
     };
-    let value = eval_const_assign_expr(binary, expr);
+    let value = eval_const_assign_expr(binary, expr)?;
     println!("'{}'", name);
     println!("'{:?}'", value);
+    Ok(())
 }
 
 fn parse_const_call(binary: &mut Binary, call: &FunctionCall) {
@@ -176,11 +129,11 @@ fn parse_function(binary: &mut Binary, func: &FunctionDeclaration) {
     });
 }
 
-fn eval_const_assign_expr(binary: &mut Binary, expr: &Expression) -> ConstValue {
+fn eval_const_assign_expr(binary: &mut Binary, expr: &Expression) -> Result<ConstValue> {
     match expr {
         Expression::BinaryOperator { lhs, binop, rhs } => {
-            let _lhs = eval_const_assign_expr(binary, lhs);
-            let _rhs = eval_const_assign_expr(binary, rhs);
+            let _lhs = eval_const_assign_expr(binary, lhs)?;
+            let _rhs = eval_const_assign_expr(binary, rhs)?;
             match binop {
                 BinOp::And(_) => unimplemented!(),
                 BinOp::Caret(_) => unimplemented!(),
@@ -202,22 +155,22 @@ fn eval_const_assign_expr(binary: &mut Binary, expr: &Expression) -> ConstValue 
         }
         Expression::Parentheses { .. } => unreachable!("Parentheses"),
         Expression::UnaryOperator { unop, expression } => {
-            let expr = eval_const_assign_expr(binary, expression);
+            let expr = eval_const_assign_expr(binary, expression)?;
             match expr {
                 ConstValue::Int { value } => match unop {
-                    UnOp::Minus(_) => ConstValue::Int { value: -value },
-                    UnOp::Not(_) => ConstValue::Int { value: !value },
+                    UnOp::Minus(_) => Ok(ConstValue::Int { value: -value }),
+                    UnOp::Not(_) => Ok(ConstValue::Int { value: !value }),
                     _ => unimplemented!("Hash"),
                 },
                 ConstValue::UInt { value } => match unop {
-                    UnOp::Minus(_) => ConstValue::Int {
+                    UnOp::Minus(_) => Ok(ConstValue::Int {
                         value: -(value as i64),
-                    },
-                    UnOp::Not(_) => ConstValue::UInt { value: !value },
+                    }),
+                    UnOp::Not(_) => Ok(ConstValue::UInt { value: !value }),
                     _ => unimplemented!("Hash"),
                 },
                 ConstValue::Float { value } => match unop {
-                    UnOp::Minus(_) => ConstValue::Float { value: -value },
+                    UnOp::Minus(_) => Ok(ConstValue::Float { value: -value }),
                     _ => unimplemented!("Hash or not"),
                 },
                 ConstValue::Buffer { .. } => panic!("Unary op on buffer"),
@@ -240,10 +193,10 @@ fn eval_const_assign_expr(binary: &mut Binary, expr: &Expression) -> ConstValue 
                     unreachable!();
                 };
                 if let Ok(num) = text.parse() {
-                    return ConstValue::Int { value: num };
+                    return Ok(ConstValue::Int { value: num });
                 }
                 if let Ok(num) = text.parse() {
-                    return ConstValue::Float { value: num };
+                    return Ok(ConstValue::Float { value: num });
                 }
                 panic!("Number");
             }

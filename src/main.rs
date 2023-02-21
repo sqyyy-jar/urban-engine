@@ -91,7 +91,9 @@ fn main() {
                 cmd.error(ErrorKind::Io, err).exit();
             }
             let content = content.unwrap();
-            parse(&content, &mut outfile);
+            if let Err(err) = parse(&content, &mut outfile) {
+                cmd.error(ErrorKind::ArgumentConflict, err).exit();
+            };
         }
         _ => unreachable!("clap should ensure we don't get here"),
     };
