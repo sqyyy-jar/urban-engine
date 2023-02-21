@@ -182,26 +182,371 @@ fn _parse_type(state: &mut State) -> Result<Type> {
     }
 }
 
-pub enum ShuntingYardState {
-    ExpectOperand,
-    ExpectOperator,
+pub enum Expr {
+    Int {
+        span: Span,
+        value: i64,
+    },
+    UInt {
+        span: Span,
+        value: u64,
+    },
+    Float {
+        span: Span,
+        value: f64,
+    },
+    String {
+        span: Span,
+    },
+    Add {
+        span: Span,
+    },
+    Sub {
+        span: Span,
+    },
+    Mul {
+        span: Span,
+    },
+    Div {
+        span: Span,
+    },
+    Var {
+        span: Span,
+    },
+    Call {
+        span: Span,
+        name_span: Span,
+        args: Vec<Expr>,
+    },
 }
 
-fn _parse_expr(ctx: &mut State) -> Result<()> {
-    let mut state = ShuntingYardState::ExpectOperand;
-    let mut output = Vec::new();
-    while ctx.stream.has_token() {
-        let token = ctx.stream.peek();
+pub struct TmpCall {
+    pub start: usize,
+    pub name_span: Span,
+    pub args: Vec<Expr>,
+    pub expect_comma: bool,
+}
+
+fn _parse_expr(state: &mut State) -> Result<()> {
+    let mut output = Vec::with_capacity(0);
+    let mut tmp_stacks = Vec::with_capacity(0);
+    while state.stream.has_token() {
+        let token = state.stream.peek();
         match token {
-            Token::Int { .. } | Token::UInt { .. } | Token::Float { .. } => {
-                if let ShuntingYardState::ExpectOperator = state {
-                    return Err(Error::new(ErrorKind::Other, "Invalid expression"));
+            Token::Ident { span } => {
+                state.stream.advance();
+                if !state.stream.has_token() {
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        "Invalid end of source in expression",
+                    ));
                 }
-                output.push(token);
-                state = ShuntingYardState::ExpectOperator;
+                let next = state.stream.peek();
+                if let Token::LeftParen { .. } = next {
+                    state.stream.advance();
+                    tmp_stacks.push(TmpCall {
+                        start: span.start,
+                        name_span: span,
+                        args: Vec::with_capacity(0),
+                        expect_comma: false,
+                    });
+                    continue;
+                }
+                if !tmp_stacks.is_empty() {
+                    let last = tmp_stacks.last_mut().unwrap();
+                    if last.expect_comma {
+                        return Err(Error::new(
+                            ErrorKind::Other,
+                            "Invalid token in expression, expected comma between call arguments",
+                        ));
+                    }
+                    last.expect_comma = true;
+                    last.args.push(Expr::Var { span });
+                    continue;
+                }
+                output.push(Expr::Var { span });
             }
-            Token::Ident { .. } => {}
-            Token::Semicolon { .. } => break,
+            Token::Int { span, value } => {
+                state.stream.advance();
+                if !tmp_stacks.is_empty() {
+                    let last = tmp_stacks.last_mut().unwrap();
+                    if last.expect_comma {
+                        return Err(Error::new(
+                            ErrorKind::Other,
+                            "Invalid token in expression, expected comma between call arguments",
+                        ));
+                    }
+                    last.expect_comma = true;
+                    last.args.push(Expr::Int { span, value });
+                    continue;
+                }
+                output.push(Expr::Int { span, value });
+            }
+            Token::UInt { span, value } => {
+                state.stream.advance();
+                if !tmp_stacks.is_empty() {
+                    let last = tmp_stacks.last_mut().unwrap();
+                    if last.expect_comma {
+                        return Err(Error::new(
+                            ErrorKind::Other,
+                            "Invalid token in expression, expected comma between call arguments",
+                        ));
+                    }
+                    last.expect_comma = true;
+                    last.args.push(Expr::UInt { span, value });
+                    continue;
+                }
+                output.push(Expr::UInt { span, value });
+            }
+            Token::Float { span, value } => {
+                state.stream.advance();
+                if !tmp_stacks.is_empty() {
+                    let last = tmp_stacks.last_mut().unwrap();
+                    if last.expect_comma {
+                        return Err(Error::new(
+                            ErrorKind::Other,
+                            "Invalid token in expression, expected comma between call arguments",
+                        ));
+                    }
+                    last.expect_comma = true;
+                    last.args.push(Expr::Float { span, value });
+                    continue;
+                }
+                output.push(Expr::Float { span, value });
+            }
+            Token::String { span } => {
+                state.stream.advance();
+                if !tmp_stacks.is_empty() {
+                    let last = tmp_stacks.last_mut().unwrap();
+                    if last.expect_comma {
+                        return Err(Error::new(
+                            ErrorKind::Other,
+                            "Invalid token in expression, expected comma between call arguments",
+                        ));
+                    }
+                    last.expect_comma = true;
+                    last.args.push(Expr::String { span });
+                    continue;
+                }
+                output.push(Expr::String { span });
+            }
+            Token::Comma { .. } => {
+                state.stream.advance();
+                if tmp_stacks.is_empty() {
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        "Invalid token in expression, comma is only allowed between call arguments",
+                    ));
+                }
+                let last = tmp_stacks.last_mut().unwrap();
+                if !last.expect_comma {
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        "Invalid token in expression, unexpected comma",
+                    ));
+                }
+                last.expect_comma = false;
+            }
+            Token::RightParen { span } => {
+                state.stream.advance();
+                if tmp_stacks.is_empty() {
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        "Invalid token in expression, no paranthesis to close",
+                    ));
+                }
+                let TmpCall {
+                    start,
+                    name_span,
+                    args,
+                    ..
+                } = tmp_stacks.pop().unwrap();
+                output.push(Expr::Call {
+                    span: start..span.end,
+                    name_span,
+                    args,
+                });
+            }
+            Token::Semicolon { .. } => {
+                if !tmp_stacks.is_empty() {
+                    return Err(Error::new(
+                        ErrorKind::Other,
+                        "Invalid semicolon in expression, not every call was closed",
+                    ));
+                }
+                state.stream.advance();
+                break;
+            }
+            _ => {}
+        }
+    }
+    todo!();
+}
+
+/// Shunting Yard element
+pub enum YardElement {
+    Int {
+        span: Span,
+        value: i64,
+    },
+    UInt {
+        span: Span,
+        value: u64,
+    },
+    Float {
+        span: Span,
+        value: f64,
+    },
+    String {
+        span: Span,
+    },
+    Add {
+        span: Span,
+    },
+    Sub {
+        span: Span,
+    },
+    Mul {
+        span: Span,
+    },
+    Div {
+        span: Span,
+    },
+    Or {
+        span: Span,
+    },
+    And {
+        span: Span,
+    },
+    Xor {
+        span: Span,
+    },
+    Var {
+        span: Span,
+    },
+    Call {
+        span: Span,
+        name_span: Span,
+        args: Vec<YardElement>,
+    },
+    Group {
+        span: Span,
+        output: Vec<YardElement>,
+    },
+}
+
+impl YardElement {
+    pub fn precedence(&self) -> usize {
+        match self {
+            Self::Add { .. } => 2,
+            Self::Sub { .. } => 2,
+            Self::Mul { .. } => 3,
+            Self::Div { .. } => 3,
+            Self::Or { .. } => 3,
+            Self::And { .. } => 3,
+            Self::Xor { .. } => 3,
+            _ => unreachable!(),
+        }
+    }
+}
+
+pub enum YardType {
+    Root,
+    Group,
+    Call { name: Span, args: Vec<YardElement> },
+}
+
+/// Shunting Yard state
+pub struct YardState {
+    pub type_: YardType,
+    pub op_stack: Vec<YardElement>,
+    pub output: Vec<YardElement>,
+}
+
+impl Default for YardState {
+    fn default() -> Self {
+        Self {
+            type_: YardType::Root,
+            op_stack: Vec::with_capacity(0),
+            output: Vec::with_capacity(0),
+        }
+    }
+}
+
+fn _parse_expr_reimpl(state: &mut State) -> Result<()> {
+    let mut yards = vec![YardState::default()];
+    while state.stream.has_token() {
+        let yard = yards.last_mut().unwrap();
+        let token = state.stream.peek();
+        state.stream.advance();
+        match token.clone() {
+            Token::Int { span, value } => {
+                yard.output.push(YardElement::Int { span, value });
+            }
+            Token::UInt { span, value } => {
+                yard.output.push(YardElement::UInt { span, value });
+            }
+            Token::Float { span, value } => {
+                yard.output.push(YardElement::Float { span, value });
+            }
+            Token::Ident { span: name } => {
+                if !state.stream.has_token() {
+                    return Err(Error::new(ErrorKind::Other, "Unexpected end of source"));
+                }
+                let next = state.stream.peek();
+                if let Token::LeftParen { .. } = next {
+                    yards.push(YardState {
+                        type_: YardType::Call {
+                            name,
+                            args: Vec::with_capacity(0),
+                        },
+                        op_stack: Vec::with_capacity(0),
+                        output: Vec::with_capacity(0),
+                    });
+                    continue;
+                }
+                yard.output.push(YardElement::Var { span: name });
+            }
+            Token::Plus { .. }
+            | Token::Minus { .. }
+            | Token::Asterisk { .. }
+            | Token::Slash { .. }
+            | Token::Or { .. }
+            | Token::And { .. }
+            | Token::Xor { .. } => {
+                while !yard.op_stack.is_empty() {
+                    let top = yard.op_stack.last().unwrap();
+                    if top.precedence() < token.precedence() {
+                        break;
+                    }
+                    yard.output.push(yard.op_stack.pop().unwrap());
+                }
+                yard.op_stack.push(match token {
+                    Token::Plus { span } => YardElement::Add { span },
+                    Token::Minus { span } => YardElement::Sub { span },
+                    Token::Asterisk { span } => YardElement::Mul { span },
+                    Token::Slash { span } => YardElement::Div { span },
+                    Token::Or { span } => YardElement::Or { span },
+                    Token::And { span } => YardElement::And { span },
+                    Token::Xor { span } => YardElement::Xor { span },
+                    _ => unreachable!(),
+                })
+            }
+            Token::RightParen { .. } => {
+                if yards.len() < 2 {
+                    return Err(Error::new(ErrorKind::Other, "Illegal closing parenthesis"));
+                }
+                let a = yards.pop().unwrap();
+                let last = yards.last_mut().unwrap();
+                match a.type_ {
+                    YardType::Root => unreachable!(),
+                    YardType::Group => last.output.push(YardElement::Group {
+                        span: 0..0,
+                        output: a.output,
+                    }),
+                    YardType::Call { .. } => todo!(),
+                }
+            }
             _ => {}
         }
     }

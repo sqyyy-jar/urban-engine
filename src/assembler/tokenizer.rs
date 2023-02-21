@@ -134,6 +134,19 @@ impl Token {
         }
         .clone()
     }
+
+    pub fn precedence(&self) -> usize {
+        match self {
+            Token::Plus { .. } => 2,
+            Token::Minus { .. } => 2,
+            Token::Asterisk { .. } => 3,
+            Token::Slash { .. } => 3,
+            Token::Or { .. } => 3,
+            Token::And { .. } => 3,
+            Token::Xor { .. } => 3,
+            _ => unreachable!(),
+        }
+    }
 }
 
 pub struct Source<'a> {
