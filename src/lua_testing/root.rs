@@ -32,7 +32,9 @@ fn parse_assign_name(_binary: &mut Binary, expr: &Expr) -> Result<ConstValue> {
     resolve_expr(_binary, expr)
 }
 
-fn parse_assign_suffixed(_binary: &mut Binary, _expr: &SuffixedExpr) {}
+fn parse_assign_suffixed(_binary: &mut Binary, _expr: &SuffixedExpr) {
+    dbg!(_expr.suffixes.len());
+}
 
 fn resolve_expr(binary: &mut Binary, expr: &Expr) -> Result<ConstValue> {
     match expr {
@@ -55,8 +57,8 @@ fn resolve_expr(binary: &mut Binary, expr: &Expr) -> Result<ConstValue> {
             let right = resolve_expr(binary, &bin_expr.right)?;
             match left {
                 ConstValue::Int { value } => self::bin_op::int(binary, value, right, op),
-                ConstValue::UInt { value: _ } => todo!(),
-                ConstValue::Float { value: _ } => todo!(),
+                ConstValue::UInt { value } => self::bin_op::uint(binary, value, right, op),
+                ConstValue::Float { value } => self::bin_op::float(binary, value, right, op),
                 ConstValue::String { value: _ } => todo!(),
                 ConstValue::Buffer { size: _ } => todo!(),
                 ConstValue::BufferOffset {
@@ -126,12 +128,6 @@ mod bin_op {
                 ConstValue::Int { value } => Ok(ConstValue::Int {
                     value: left + value,
                 }),
-                ConstValue::UInt { value } => Ok(ConstValue::Int {
-                    value: left + value as i64,
-                }),
-                ConstValue::Float { value } => Ok(ConstValue::Float {
-                    value: left as f64 + value,
-                }),
                 ConstValue::Const { .. } => unimplemented!("Constexpr"),
                 _ => Err(
                     Error::InvalidBinaryOperator(ConstValue::Int { value: left }, right, op).into(),
@@ -140,12 +136,6 @@ mod bin_op {
             BinOp::Minus => match right {
                 ConstValue::Int { value } => Ok(ConstValue::Int {
                     value: left - value,
-                }),
-                ConstValue::UInt { value } => Ok(ConstValue::Int {
-                    value: left - value as i64,
-                }),
-                ConstValue::Float { value } => Ok(ConstValue::Float {
-                    value: left as f64 - value,
                 }),
                 ConstValue::Const { .. } => unimplemented!("Constexpr"),
                 _ => Err(
@@ -156,28 +146,32 @@ mod bin_op {
                 ConstValue::Int { value } => Ok(ConstValue::Int {
                     value: left * value,
                 }),
-                ConstValue::UInt { value } => Ok(ConstValue::Int {
-                    value: left * value as i64,
-                }),
-                ConstValue::Float { value } => Ok(ConstValue::Float {
-                    value: left as f64 * value,
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => Err(
+                    Error::InvalidBinaryOperator(ConstValue::Int { value: left }, right, op).into(),
+                ),
+            },
+            BinOp::Mod => match right {
+                ConstValue::Int { value } => Ok(ConstValue::Int {
+                    value: left % value,
                 }),
                 ConstValue::Const { .. } => unimplemented!("Constexpr"),
                 _ => Err(
                     Error::InvalidBinaryOperator(ConstValue::Int { value: left }, right, op).into(),
                 ),
             },
-            BinOp::Mod => unimplemented!("modulo"),
-            BinOp::Pow => unimplemented!("power"),
+            BinOp::Pow => match right {
+                ConstValue::Int { value } => Ok(ConstValue::Int {
+                    value: left.pow(value as u32),
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => Err(
+                    Error::InvalidBinaryOperator(ConstValue::Int { value: left }, right, op).into(),
+                ),
+            },
             BinOp::Div => match right {
-                ConstValue::Int { value } => Ok(ConstValue::Float {
-                    value: left as f64 / value as f64,
-                }),
-                ConstValue::UInt { value } => Ok(ConstValue::Float {
-                    value: left as f64 / value as f64,
-                }),
-                ConstValue::Float { value } => Ok(ConstValue::Float {
-                    value: left as f64 / value,
+                ConstValue::Int { value } => Ok(ConstValue::Int {
+                    value: left / value,
                 }),
                 ConstValue::Const { .. } => unimplemented!("Constexpr"),
                 _ => Err(
@@ -188,12 +182,6 @@ mod bin_op {
                 ConstValue::Int { value } => Ok(ConstValue::Int {
                     value: left / value,
                 }),
-                ConstValue::UInt { value } => Ok(ConstValue::Int {
-                    value: left / value as i64,
-                }),
-                ConstValue::Float { value } => Ok(ConstValue::Int {
-                    value: left / value as i64,
-                }),
                 ConstValue::Const { .. } => unimplemented!("Constexpr"),
                 _ => Err(
                     Error::InvalidBinaryOperator(ConstValue::Int { value: left }, right, op).into(),
@@ -202,9 +190,6 @@ mod bin_op {
             BinOp::And | BinOp::BAnd => match right {
                 ConstValue::Int { value } => Ok(ConstValue::Int {
                     value: left & value,
-                }),
-                ConstValue::UInt { value } => Ok(ConstValue::Int {
-                    value: left & value as i64,
                 }),
                 ConstValue::Const { .. } => unimplemented!("Constexpr"),
                 _ => Err(
@@ -215,9 +200,6 @@ mod bin_op {
                 ConstValue::Int { value } => Ok(ConstValue::Int {
                     value: left | value,
                 }),
-                ConstValue::UInt { value } => Ok(ConstValue::Int {
-                    value: left | value as i64,
-                }),
                 ConstValue::Const { .. } => unimplemented!("Constexpr"),
                 _ => Err(
                     Error::InvalidBinaryOperator(ConstValue::Int { value: left }, right, op).into(),
@@ -226,9 +208,6 @@ mod bin_op {
             BinOp::BXor => match right {
                 ConstValue::Int { value } => Ok(ConstValue::Int {
                     value: left ^ value,
-                }),
-                ConstValue::UInt { value } => Ok(ConstValue::Int {
-                    value: left ^ value as i64,
                 }),
                 ConstValue::Const { .. } => unimplemented!("Constexpr"),
                 _ => Err(
@@ -239,9 +218,6 @@ mod bin_op {
                 ConstValue::Int { value } => Ok(ConstValue::Int {
                     value: left << value,
                 }),
-                ConstValue::UInt { value } => Ok(ConstValue::Int {
-                    value: left << value as i64,
-                }),
                 ConstValue::Const { .. } => unimplemented!("Constexpr"),
                 _ => Err(
                     Error::InvalidBinaryOperator(ConstValue::Int { value: left }, right, op).into(),
@@ -250,9 +226,6 @@ mod bin_op {
             BinOp::Shr => match right {
                 ConstValue::Int { value } => Ok(ConstValue::Int {
                     value: left >> value,
-                }),
-                ConstValue::UInt { value } => Ok(ConstValue::Int {
-                    value: left >> value as i64,
                 }),
                 ConstValue::Const { .. } => unimplemented!("Constexpr"),
                 _ => Err(
@@ -267,6 +240,252 @@ mod bin_op {
             BinOp::Gt => todo!(),
             BinOp::Ge => todo!(),
             BinOp::None => todo!(),
+        }
+    }
+
+    pub fn uint(
+        _binary: &mut Binary,
+        left: u64,
+        right: ConstValue,
+        op: BinOp,
+    ) -> Result<ConstValue> {
+        match op {
+            BinOp::Add => match right {
+                ConstValue::UInt { value } => Ok(ConstValue::UInt {
+                    value: left + value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => Err(
+                    Error::InvalidBinaryOperator(ConstValue::UInt { value: left }, right, op)
+                        .into(),
+                ),
+            },
+            BinOp::Minus => match right {
+                ConstValue::UInt { value } => Ok(ConstValue::UInt {
+                    value: left - value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => Err(
+                    Error::InvalidBinaryOperator(ConstValue::UInt { value: left }, right, op)
+                        .into(),
+                ),
+            },
+            BinOp::Mul => match right {
+                ConstValue::UInt { value } => Ok(ConstValue::UInt {
+                    value: left * value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => Err(
+                    Error::InvalidBinaryOperator(ConstValue::UInt { value: left }, right, op)
+                        .into(),
+                ),
+            },
+            BinOp::Mod => match right {
+                ConstValue::UInt { value } => Ok(ConstValue::UInt {
+                    value: left % value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => Err(
+                    Error::InvalidBinaryOperator(ConstValue::UInt { value: left }, right, op)
+                        .into(),
+                ),
+            },
+            BinOp::Pow => match right {
+                ConstValue::UInt { value } => Ok(ConstValue::UInt {
+                    value: left.pow(value as u32),
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => Err(
+                    Error::InvalidBinaryOperator(ConstValue::UInt { value: left }, right, op)
+                        .into(),
+                ),
+            },
+            BinOp::Div => match right {
+                ConstValue::UInt { value } => Ok(ConstValue::UInt {
+                    value: left / value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => Err(
+                    Error::InvalidBinaryOperator(ConstValue::UInt { value: left }, right, op)
+                        .into(),
+                ),
+            },
+            BinOp::IDiv => match right {
+                ConstValue::UInt { value } => Ok(ConstValue::UInt {
+                    value: left / value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => Err(
+                    Error::InvalidBinaryOperator(ConstValue::UInt { value: left }, right, op)
+                        .into(),
+                ),
+            },
+            BinOp::And | BinOp::BAnd => match right {
+                ConstValue::UInt { value } => Ok(ConstValue::UInt {
+                    value: left & value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => Err(
+                    Error::InvalidBinaryOperator(ConstValue::UInt { value: left }, right, op)
+                        .into(),
+                ),
+            },
+            BinOp::Or | BinOp::BOr => match right {
+                ConstValue::UInt { value } => Ok(ConstValue::UInt {
+                    value: left | value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => Err(
+                    Error::InvalidBinaryOperator(ConstValue::UInt { value: left }, right, op)
+                        .into(),
+                ),
+            },
+            BinOp::BXor => match right {
+                ConstValue::UInt { value } => Ok(ConstValue::UInt {
+                    value: left ^ value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => Err(
+                    Error::InvalidBinaryOperator(ConstValue::UInt { value: left }, right, op)
+                        .into(),
+                ),
+            },
+            BinOp::Shl => match right {
+                ConstValue::UInt { value } => Ok(ConstValue::UInt {
+                    value: left << value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => Err(
+                    Error::InvalidBinaryOperator(ConstValue::UInt { value: left }, right, op)
+                        .into(),
+                ),
+            },
+            BinOp::Shr => match right {
+                ConstValue::UInt { value } => Ok(ConstValue::UInt {
+                    value: left >> value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => Err(
+                    Error::InvalidBinaryOperator(ConstValue::UInt { value: left }, right, op)
+                        .into(),
+                ),
+            },
+            BinOp::Concat => todo!(),
+            BinOp::Ne => todo!(),
+            BinOp::Eq => todo!(),
+            BinOp::Lt => todo!(),
+            BinOp::Le => todo!(),
+            BinOp::Gt => todo!(),
+            BinOp::Ge => todo!(),
+            BinOp::None => todo!(),
+        }
+    }
+
+    pub fn float(
+        _binary: &mut Binary,
+        left: f64,
+        right: ConstValue,
+        op: BinOp,
+    ) -> Result<ConstValue> {
+        match op {
+            BinOp::Add => match right {
+                ConstValue::Float { value } => Ok(ConstValue::Float {
+                    value: left + value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => {
+                    Err(
+                        Error::InvalidBinaryOperator(ConstValue::Float { value: left }, right, op)
+                            .into(),
+                    )
+                }
+            },
+            BinOp::Minus => match right {
+                ConstValue::Float { value } => Ok(ConstValue::Float {
+                    value: left - value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => {
+                    Err(
+                        Error::InvalidBinaryOperator(ConstValue::Float { value: left }, right, op)
+                            .into(),
+                    )
+                }
+            },
+            BinOp::Mul => match right {
+                ConstValue::Float { value } => Ok(ConstValue::Float {
+                    value: left * value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => {
+                    Err(
+                        Error::InvalidBinaryOperator(ConstValue::Float { value: left }, right, op)
+                            .into(),
+                    )
+                }
+            },
+            BinOp::Mod => match right {
+                ConstValue::Float { value } => Ok(ConstValue::Float {
+                    value: left % value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => {
+                    Err(
+                        Error::InvalidBinaryOperator(ConstValue::Float { value: left }, right, op)
+                            .into(),
+                    )
+                }
+            },
+            BinOp::Pow => match right {
+                ConstValue::Int { value } => Ok(ConstValue::Float {
+                    value: left.powi(value as i32),
+                }),
+                ConstValue::Float { value } => Ok(ConstValue::Float {
+                    value: left.powf(value),
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => {
+                    Err(
+                        Error::InvalidBinaryOperator(ConstValue::Float { value: left }, right, op)
+                            .into(),
+                    )
+                }
+            },
+            BinOp::Div => match right {
+                ConstValue::Float { value } => Ok(ConstValue::Float {
+                    value: left / value,
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => {
+                    Err(
+                        Error::InvalidBinaryOperator(ConstValue::Float { value: left }, right, op)
+                            .into(),
+                    )
+                }
+            },
+            BinOp::IDiv => match right {
+                ConstValue::Float { value } => Ok(ConstValue::Float {
+                    value: (left / value).floor(),
+                }),
+                ConstValue::Const { .. } => unimplemented!("Constexpr"),
+                _ => {
+                    Err(
+                        Error::InvalidBinaryOperator(ConstValue::Float { value: left }, right, op)
+                            .into(),
+                    )
+                }
+            },
+            BinOp::Concat => todo!(),
+            BinOp::Ne => todo!(),
+            BinOp::Eq => todo!(),
+            BinOp::Lt => todo!(),
+            BinOp::Le => todo!(),
+            BinOp::Gt => todo!(),
+            BinOp::Ge => todo!(),
+            BinOp::None => todo!(),
+            _ => Err(
+                Error::InvalidBinaryOperator(ConstValue::Float { value: left }, right, op).into(),
+            ),
         }
     }
 }
