@@ -8,6 +8,8 @@ use super::{ConstType, ConstValue};
 
 #[derive(Debug, Error)]
 pub enum Error {
+    #[error("Unsupported root element at: {0:?}")]
+    UnsupportedRootElement(Source),
     #[error("Invalid assignment at: {0:?}")]
     InvalidAssignment(Source),
     #[error("Invalid unary operator '{1:?}' for constant value '{0:?}'")]

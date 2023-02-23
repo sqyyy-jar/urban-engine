@@ -1,10 +1,13 @@
 pub mod error;
+pub mod func;
 pub mod root;
 
 use std::{fmt::Display, io::Write};
 
 use anyhow::Result;
 use rslua::ast::Stat;
+
+use crate::lua_testing::error::Error;
 
 #[derive(Debug)]
 pub struct Binary {
@@ -92,20 +95,16 @@ pub fn parse(source: &str, _outfile: &mut impl Write) -> Result<()> {
     println!("{r2:#?}");
     for stat in r2.stats {
         match stat.stat {
-            Stat::IfStat(_) => unimplemented!(),
-            Stat::WhileStat(_) => unimplemented!(),
-            Stat::DoBlock(_) => unimplemented!(),
-            Stat::ForStat(_) => unimplemented!(),
-            Stat::RepeatStat(_) => unimplemented!(),
-            Stat::FuncStat(_) => unimplemented!(),
-            Stat::LocalStat(_) => unimplemented!(),
-            Stat::LabelStat(_) => unimplemented!(),
-            Stat::RetStat(_) => unimplemented!(),
-            Stat::BreakStat(_) => unimplemented!(),
-            Stat::GotoStat(_) => unimplemented!(),
+            Stat::DoBlock(_) => unimplemented!("DoBlock"),
+            Stat::FuncStat(func) => self::func::parse_func(&mut binary, func, stat.source)?,
+            Stat::LocalStat(_) => unimplemented!("LocalStat"),
+            Stat::LabelStat(_) => unimplemented!("LabelStat"),
             Stat::AssignStat(assign) => self::root::parse_assign(&mut binary, assign, stat.source)?,
-            Stat::CallStat(_) => unimplemented!(),
+            Stat::CallStat(_) => unimplemented!("CallStat"),
             Stat::CommentStat(_) => {}
+            _ => {
+                return Err(Error::UnsupportedRootElement(stat.source).into());
+            }
         }
     }
     println!("{binary:#?}");

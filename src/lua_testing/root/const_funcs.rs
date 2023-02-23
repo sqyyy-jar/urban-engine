@@ -33,14 +33,11 @@ pub fn expect_args(name: &str, args: &[ConstValue], expected: &[ConstType]) -> R
 }
 
 fn u(_: &mut Binary, args: &[ConstValue]) -> Result<ConstValue> {
-    expect_args_len("u", args, 1)?;
-    let arg = &args[0];
-    match arg {
-        ConstValue::Int { value } => Ok(ConstValue::UInt {
-            value: *value as u64,
-        }),
-        _ => Err(
-            Error::InvalidConstCallArgsTypes("u".to_string(), ConstType::Int, arg.type_()).into(),
-        ),
-    }
+    expect_args("u", args, &[ConstType::Int])?;
+    let ConstValue::Int { value } = &args[0] else {
+        unreachable!();
+    };
+    Ok(ConstValue::UInt {
+        value: *value as u64,
+    })
 }
