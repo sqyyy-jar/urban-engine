@@ -1,2 +1,8 @@
 /target
 **/__pycache__
+.vscode/
+codegen/bin/
+codegen/obj
+**/.idea/
+/*.lua
+/*.bin
