@@ -1,7 +1,7 @@
 pub mod error;
 pub mod root;
 
-use std::io::Write;
+use std::{fmt::Display, io::Write};
 
 use anyhow::Result;
 use rslua::ast::Stat;
@@ -37,6 +37,45 @@ pub enum ConstValue {
     Buffer { size: usize },
     BufferOffset { index: usize, offset: i64 },
     Const { name: String },
+}
+
+impl ConstValue {
+    pub fn type_(&self) -> ConstType {
+        match self {
+            ConstValue::Int { .. } => ConstType::Int,
+            ConstValue::UInt { .. } => ConstType::UInt,
+            ConstValue::Float { .. } => ConstType::Float,
+            ConstValue::String { .. } => ConstType::String,
+            ConstValue::Buffer { .. } => ConstType::Buffer,
+            ConstValue::BufferOffset { .. } => ConstType::BufferOffset,
+            ConstValue::Const { .. } => ConstType::Const,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum ConstType {
+    Int,
+    UInt,
+    Float,
+    String,
+    Buffer,
+    BufferOffset,
+    Const,
+}
+
+impl Display for ConstType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ConstType::Int => f.write_str("int"),
+            ConstType::UInt => f.write_str("uint"),
+            ConstType::Float => f.write_str("float"),
+            ConstType::String => f.write_str("string"),
+            ConstType::Buffer => f.write_str("buffer"),
+            ConstType::BufferOffset => f.write_str("buffer-offset"),
+            ConstType::Const => f.write_str("const"),
+        }
+    }
 }
 
 #[derive(Debug)]

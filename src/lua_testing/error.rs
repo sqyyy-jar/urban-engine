@@ -4,7 +4,7 @@ use rslua::{
 };
 use thiserror::Error;
 
-use super::ConstValue;
+use super::{ConstType, ConstValue};
 
 #[derive(Debug, Error)]
 pub enum Error {
@@ -22,6 +22,6 @@ pub enum Error {
         "Invalid amount of passed arguments in constant call to '{0}'. Expected {1} but got {2}"
     )]
     InvalidConstCallArgsCount(String, usize, usize),
-    #[error("Invalid types passed in constant call to '{0}'. Expected {1} but got {2:?}")]
-    InvalidConstCallArgsTypes(String, String, ConstValue),
+    #[error("Invalid types passed in constant call to '{0}'. Expected {1} but got {2}")]
+    InvalidConstCallArgsTypes(String, ConstType, ConstType),
 }

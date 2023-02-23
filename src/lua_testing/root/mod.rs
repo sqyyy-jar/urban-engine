@@ -1,5 +1,6 @@
 mod bin_op;
 pub mod const_funcs;
+pub mod core;
 
 use anyhow::Result;
 use rslua::{
