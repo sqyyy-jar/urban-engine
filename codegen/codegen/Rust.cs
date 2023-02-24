@@ -1,4 +1,3 @@
-using System.Runtime.Serialization;
 using System.Text;
 
 namespace urban_codegen.codegen;
@@ -8,6 +7,11 @@ public class Rust : Codegen
     public void Run(Instructions instructions)
     {
         Directory.CreateDirectory("gen/rust");
+        OpCodes(instructions);
+    }
+
+    private static void OpCodes(Instructions instructions)
+    {
         var opcodesFile = File.Create("gen/rust/opcodes.rs");
         var opcodes = new StreamWriter(opcodesFile);
         opcodes.WriteLine($"""

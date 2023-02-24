@@ -7,6 +7,11 @@ public class Java : Codegen
     public void Run(Instructions instructions)
     {
         Directory.CreateDirectory("gen/java");
+        OpCodes(instructions);
+    }
+
+    private static void OpCodes(Instructions instructions)
+    {
         var opcodesFile = File.Create("gen/java/OpCodes.java");
         var opcodes = new StreamWriter(opcodesFile);
         opcodes.WriteLine($$"""
