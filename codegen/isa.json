@@ -1,0 +1,501 @@
+{
+  "version": "1.0",
+  "layers": [
+    {
+      "bits": 5,
+      "instructions": [
+        {
+          "name": "add",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "u:rhs:17"
+          ]
+        },
+        {
+          "name": "sub",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "u:rhs:17"
+          ]
+        },
+        {
+          "name": "mul",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "u:rhs:17"
+          ]
+        },
+        {
+          "name": "div",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "u:rhs:17"
+          ]
+        },
+        {
+          "name": "adds",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "i:rhs:17"
+          ]
+        },
+        {
+          "name": "subs",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "i:rhs:17"
+          ]
+        },
+        {
+          "name": "muls",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "i:rhs:17"
+          ]
+        },
+        {
+          "name": "divs",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "i:rhs:17"
+          ]
+        },
+        {
+          "name": "ldr",
+          "components": [
+            "r:dst",
+            "i:src:22"
+          ]
+        },
+        {
+          "name": "str",
+          "components": [
+            "i:dst:22",
+            "r:src"
+          ]
+        },
+        {
+          "name": "mov",
+          "components": [
+            "r:dst",
+            "u:value:22"
+          ]
+        },
+        {
+          "name": "movs",
+          "components": [
+            "r:dst",
+            "i:value:22"
+          ]
+        },
+        {
+          "name": "branch",
+          "components": [
+            "i:dst:27"
+          ]
+        },
+        {
+          "name": "lbranch",
+          "components": [
+            "i:dst:27"
+          ]
+        },
+        {
+          "name": "branch.ld",
+          "components": [
+            "i:src:27"
+          ]
+        },
+        {
+          "name": "lbranch.ld",
+          "components": [
+            "i:src:27"
+          ]
+        },
+        {
+          "name": "branch.eq",
+          "components": [
+            "i:dst:22",
+            "r:cond"
+          ]
+        },
+        {
+          "name": "branch.ne",
+          "components": [
+            "i:dst:22",
+            "r:cond"
+          ]
+        },
+        {
+          "name": "branch.lt",
+          "components": [
+            "i:dst:22",
+            "r:cond"
+          ]
+        },
+        {
+          "name": "branch.gt",
+          "components": [
+            "i:dst:22",
+            "r:cond"
+          ]
+        },
+        {
+          "name": "branch.le",
+          "components": [
+            "i:dst:22",
+            "r:cond"
+          ]
+        },
+        {
+          "name": "branch.ge",
+          "components": [
+            "i:dst:22",
+            "r:cond"
+          ]
+        }
+      ]
+    },
+    {
+      "bits": 6,
+      "instructions": [
+        {
+          "name": "shl",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "u:rhs:11"
+          ]
+        },
+        {
+          "name": "shr",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "u:rhs:11"
+          ]
+        },
+        {
+          "name": "shrs",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "u:rhs:11"
+          ]
+        },
+        {
+          "name": "ldr",
+          "components": [
+            "r:dst",
+            "r:src",
+            "i:offset:11"
+          ]
+        },
+        {
+          "name": "ldrb",
+          "components": [
+            "r:dst",
+            "r:src",
+            "i:offset:11"
+          ]
+        },
+        {
+          "name": "ldrh",
+          "components": [
+            "r:dst",
+            "r:src",
+            "i:offset:11"
+          ]
+        },
+        {
+          "name": "ldrw",
+          "components": [
+            "r:dst",
+            "r:src",
+            "i:offset:11"
+          ]
+        },
+        {
+          "name": "str",
+          "components": [
+            "r:dst",
+            "r:src",
+            "i:offset:11"
+          ]
+        },
+        {
+          "name": "strb",
+          "components": [
+            "r:dst",
+            "r:src",
+            "i:offset:11"
+          ]
+        },
+        {
+          "name": "strh",
+          "components": [
+            "r:dst",
+            "r:src",
+            "i:offset:11"
+          ]
+        },
+        {
+          "name": "strw",
+          "components": [
+            "r:dst",
+            "r:src",
+            "i:offset:11"
+          ]
+        },
+        {
+          "name": "int",
+          "components": [
+            "u:id:16"
+          ]
+        },
+        {
+          "name": "ncall",
+          "components": [
+            "u:id:21"
+          ]
+        },
+        {
+          "name": "vcall",
+          "components": [
+            "u:id:21"
+          ]
+        }
+      ]
+    },
+    {
+      "bits": 6,
+      "instructions": [
+        {
+          "name": "add",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "sub",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "mul",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "div",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "adds",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "subs",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "muls",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "divs",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "addf",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "subf",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "mulf",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "divf",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "and",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "or",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "xor",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "shl",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "shr",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "shrs",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "cmp",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "cmps",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "cmpf",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        }
+      ]
+    },
+    {
+      "bits": 5,
+      "instructions": [
+        {
+          "name": "not",
+          "components": [
+            "r:dst",
+            "r:src"
+          ]
+        },
+        {
+          "name": "mov",
+          "components": [
+            "r:dst",
+            "r:src"
+          ]
+        }
+      ]
+    },
+    {
+      "bits": 5,
+      "instructions": [
+        {
+          "name": "branchr",
+          "components": [
+            "r:dst"
+          ]
+        },
+        {
+          "name": "lbranchr",
+          "components": [
+            "r:dst"
+          ]
+        }
+      ]
+    },
+    {
+      "bits": 5,
+      "instructions": [
+        {
+          "name": "nop",
+          "components": []
+        },
+        {
+          "name": "halt",
+          "components": []
+        }
+      ]
+    }
+  ]
+}
