@@ -2,7 +2,7 @@ pub mod error;
 pub mod func;
 pub mod root;
 
-use std::{fmt::Display, io::Write};
+use std::{collections::HashMap, fmt::Display, io::Write};
 
 use anyhow::Result;
 use rslua::ast::Stat;
@@ -11,17 +11,40 @@ use crate::lua_testing::error::Error;
 
 #[derive(Debug)]
 pub struct Binary {
+    pub namespace: String,
     pub statics: Vec<Constant>,
-    pub funcs: Vec<Func>,
+    pub path: HashMap<String, PathNode>,
 }
 
 impl Default for Binary {
     fn default() -> Self {
         Self {
+            namespace: "<annonymous>".to_string(),
             statics: Vec::with_capacity(0),
+            path: HashMap::with_capacity(0),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct PathNode {
+    pub sub_packages: HashMap<String, PathNode>,
+    pub funcs: Vec<PathFunc>,
+}
+
+impl Default for PathNode {
+    fn default() -> Self {
+        Self {
+            sub_packages: HashMap::with_capacity(0),
             funcs: Vec::with_capacity(0),
         }
     }
+}
+
+#[derive(Debug)]
+pub enum PathFunc {
+    CompiledFunc { args_count: usize, code: Vec<u8> },
+    UncompiledFunc { args_count: usize, body: () },
 }
 
 #[derive(Debug)]
@@ -30,7 +53,6 @@ pub struct Constant {
     pub value: ConstValue,
 }
 
-// Use direct values as there are no ranges provided
 #[derive(Clone, Debug)]
 pub enum ConstValue {
     Int { value: i64 },
@@ -79,12 +101,6 @@ impl Display for ConstType {
             ConstType::Const => f.write_str("const"),
         }
     }
-}
-
-#[derive(Debug)]
-pub struct Func {
-    pub name: String,
-    pub param_count: usize,
 }
 
 pub fn parse(source: &str, _outfile: &mut impl Write) -> Result<()> {

@@ -26,4 +26,10 @@ pub enum Error {
     InvalidConstCallArgsCount(String, usize, usize),
     #[error("Invalid types passed in constant call to '{0}'. Expected {1} but got {2}")]
     InvalidConstCallArgsTypes(String, ConstType, ConstType),
+    #[error("Invalid function name construct. Expected something like 'a.b:c', 'a:b' or just 'a'")]
+    InvalidFunctionNameConstruct(),
+    #[error("Invalid function name: '{0}'")]
+    InvalidFunctionName(String),
+    #[error("Unsupported vararg in signature of function '{0}'")]
+    UnsupportedVarargInFunctionSignature(String),
 }
