@@ -1,3 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using urban_codegen;
 
-Console.WriteLine("Hello, World!");
+var instructions = Instructions.Load("isa.json");
+Console.WriteLine(instructions);
