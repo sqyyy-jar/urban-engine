@@ -70,6 +70,41 @@ public class Instructions
         return components;
     }
 
+    public void Verify()
+    {
+        var lostBits = 0u;
+        var layerId = 0;
+        foreach (var layer in Layers)
+        {
+            var layerBits = layer.PrefixBits + layer.Bits;
+            if (layerBits > 32)
+            {
+                throw new Exception($"Too high amount of layer bits on L{layerId}: {layerBits}");
+            }
+
+            foreach (var instruction in layer.Instructions)
+            {
+                var usedBits =
+                    instruction.Components.Aggregate(layerBits, (current, component) => current + component.Bits);
+                if (usedBits > 32)
+                {
+                    throw new Exception(
+                        $"Too high amount of instruction bits on L{layerId}/{instruction.Name}: {usedBits}");
+                }
+
+                lostBits += 32 - usedBits;
+                if (usedBits < 32)
+                {
+                    Console.WriteLine($"{32 - usedBits} lost bits on L{layerId}/{instruction.Name}");
+                }
+            }
+
+            layerId++;
+        }
+
+        Console.WriteLine($"ISA losses {lostBits} bits.");
+    }
+
     public override string ToString()
     {
         var res = new StringBuilder($"Version: {Version}\n" +
