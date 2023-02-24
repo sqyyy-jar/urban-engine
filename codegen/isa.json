@@ -103,7 +103,7 @@
           ]
         },
         {
-          "name": "lbranch",
+          "name": "branch.l",
           "components": [
             "i:dst:27"
           ]
@@ -115,7 +115,7 @@
           ]
         },
         {
-          "name": "lbranch.ld",
+          "name": "branch.l.ld",
           "components": [
             "i:src:27"
           ]
@@ -262,13 +262,13 @@
           ]
         },
         {
-          "name": "ncall",
+          "name": "n_call",
           "components": [
             "u:id:21"
           ]
         },
         {
-          "name": "vcall",
+          "name": "v_call",
           "components": [
             "u:id:21"
           ]
@@ -471,13 +471,13 @@
       "bits": 5,
       "instructions": [
         {
-          "name": "branchr",
+          "name": "branch.r",
           "components": [
             "r:dst"
           ]
         },
         {
-          "name": "lbranchr",
+          "name": "branch.l.r",
           "components": [
             "r:dst"
           ]

@@ -71,20 +71,20 @@ public class OpCodes {
     public static final int L0_BRANCH = 0b01100_000000000000000000000000000;
     public static final int END_L0_BRANCH = 0b01100_111111111111111111111111111;
     /**
-     * {@code lbranch i27}
+     * {@code branch.l i27}
      */
-    public static final int L0_LBRANCH = 0b01101_000000000000000000000000000;
-    public static final int END_L0_LBRANCH = 0b01101_111111111111111111111111111;
+    public static final int L0_BRANCH_L = 0b01101_000000000000000000000000000;
+    public static final int END_L0_BRANCH_L = 0b01101_111111111111111111111111111;
     /**
      * {@code branch.ld i27}
      */
     public static final int L0_BRANCH_LD = 0b01110_000000000000000000000000000;
     public static final int END_L0_BRANCH_LD = 0b01110_111111111111111111111111111;
     /**
-     * {@code lbranch.ld i27}
+     * {@code branch.l.ld i27}
      */
-    public static final int L0_LBRANCH_LD = 0b01111_000000000000000000000000000;
-    public static final int END_L0_LBRANCH_LD = 0b01111_111111111111111111111111111;
+    public static final int L0_BRANCH_L_LD = 0b01111_000000000000000000000000000;
+    public static final int END_L0_BRANCH_L_LD = 0b01111_111111111111111111111111111;
     /**
      * {@code branch.eq i22 Xcond}
      */
@@ -176,15 +176,15 @@ public class OpCodes {
     public static final int L1_INT = 0b11111_001011_00000_0000000000000000;
     public static final int END_L1_INT = 0b11111_001011_00000_1111111111111111;
     /**
-     * {@code ncall u21}
+     * {@code n_call u21}
      */
-    public static final int L1_NCALL = 0b11111_001100_000000000000000000000;
-    public static final int END_L1_NCALL = 0b11111_001100_111111111111111111111;
+    public static final int L1_N_CALL = 0b11111_001100_000000000000000000000;
+    public static final int END_L1_N_CALL = 0b11111_001100_111111111111111111111;
     /**
-     * {@code vcall u21}
+     * {@code v_call u21}
      */
-    public static final int L1_VCALL = 0b11111_001101_000000000000000000000;
-    public static final int END_L1_VCALL = 0b11111_001101_111111111111111111111;
+    public static final int L1_V_CALL = 0b11111_001101_000000000000000000000;
+    public static final int END_L1_V_CALL = 0b11111_001101_111111111111111111111;
     /**
      * {@code add Xdst Xlhs Xrhs}
      */
@@ -301,15 +301,15 @@ public class OpCodes {
     public static final int L3_MOV = 0b11111111111111111_00001_00000_00000;
     public static final int END_L3_MOV = 0b11111111111111111_00001_11111_11111;
     /**
-     * {@code branchr Xdst}
+     * {@code branch.r Xdst}
      */
-    public static final int L4_BRANCHR = 0b1111111111111111111111_00000_00000;
-    public static final int END_L4_BRANCHR = 0b1111111111111111111111_00000_11111;
+    public static final int L4_BRANCH_R = 0b1111111111111111111111_00000_00000;
+    public static final int END_L4_BRANCH_R = 0b1111111111111111111111_00000_11111;
     /**
-     * {@code lbranchr Xdst}
+     * {@code branch.l.r Xdst}
      */
-    public static final int L4_LBRANCHR = 0b1111111111111111111111_00001_00000;
-    public static final int END_L4_LBRANCHR = 0b1111111111111111111111_00001_11111;
+    public static final int L4_BRANCH_L_R = 0b1111111111111111111111_00001_00000;
+    public static final int END_L4_BRANCH_L_R = 0b1111111111111111111111_00001_11111;
     /**
      * {@code nop}
      */
