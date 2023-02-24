@@ -31,7 +31,7 @@ public class Instructions
         foreach (var layer in json.EnumerateArray())
         {
             var bits = layer.GetProperty("bits").GetUInt32();
-            var instructions = LoadInstructions(layer.GetProperty("instructions"));
+            var instructions = LoadInstructions(layer.GetProperty("instructions"), prefixBits + bits);
             layers.Add(new Layer(prefixBits, bits, instructions));
             prefixBits += bits;
         }
@@ -39,20 +39,22 @@ public class Instructions
         return layers;
     }
 
-    private static IEnumerable<Instruction> LoadInstructions(JsonElement json)
+    private static IEnumerable<Instruction> LoadInstructions(JsonElement json, uint layerBits)
     {
         var instructions = new List<Instruction>();
+        var index = 0u;
         foreach (var instruction in json.EnumerateArray())
         {
             var name = instruction.GetProperty("name").GetString()!;
             var components = LoadComponents(instruction.GetProperty("components"));
-            instructions.Add(new Instruction(name, components));
+            var lostBits = 32u - layerBits - (uint)components.Sum(it => it.Bits);
+            instructions.Add(new Instruction(name, index++, lostBits, components));
         }
 
         return instructions;
     }
 
-    private static IEnumerable<IInstructionComponent> LoadComponents(JsonElement json)
+    private static List<IInstructionComponent> LoadComponents(JsonElement json)
     {
         var components = new List<IInstructionComponent>();
         foreach (var component in json.EnumerateArray())
@@ -80,6 +82,14 @@ public class Instructions
             if (layerBits > 32)
             {
                 throw new Exception($"Too high amount of layer bits on L{layerId}: {layerBits}");
+            }
+
+            var maxInstructionCount = (1u << (int)layer.Bits) - 1;
+            var instructionCount = layer.Instructions.Count;
+            if (instructionCount > maxInstructionCount)
+            {
+                throw new Exception(
+                    $"Too high amount of instructions on L{layerId}: {instructionCount}/{maxInstructionCount}");
             }
 
             foreach (var instruction in layer.Instructions)
@@ -150,17 +160,22 @@ public class Layer
 public class Instruction
 {
     public readonly string Name;
+    public readonly uint Index;
+    public readonly uint LostBits;
     public readonly ImmutableList<IInstructionComponent> Components;
 
-    public Instruction(string name, IEnumerable<IInstructionComponent> components)
+    public Instruction(string name, uint index, uint lostBits, IEnumerable<IInstructionComponent> components)
     {
         Name = name;
+        Index = index;
+        LostBits = lostBits;
         Components = components.ToImmutableList();
     }
 
     public override string ToString()
     {
         var res = new StringBuilder($"    Name: {Name}\n" +
+                                    $"    LostBits: {LostBits}\n" +
                                     $"    Components: [");
         res.Append(string.Join(", ", Components.Select(it => it.DocString)));
         res.Append("]");

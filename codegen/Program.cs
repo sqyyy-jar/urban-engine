@@ -1,5 +1,6 @@
 ﻿using urban_codegen;
+using urban_codegen.codegen;
 
 var instructions = Instructions.Load("isa.json");
 instructions.Verify();
-Console.WriteLine(instructions);
+new Rust().Run(instructions);
