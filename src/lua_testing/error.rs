@@ -10,6 +10,10 @@ use super::{ConstType, ConstValue};
 pub enum Error {
     #[error("Unsupported root element at: {0:?}")]
     UnsupportedRootElement(Source),
+    #[error("Unsupported element at: {0:?}")]
+    UnsupportedElement(Source),
+    #[error("Unsupported vararg in signature of function '{0}'")]
+    UnsupportedVarargInFunctionSignature(String),
     #[error("Invalid assignment at: {0:?}")]
     InvalidAssignment(Source),
     #[error("Invalid unary operator '{1:?}' for constant value '{0:?}'")]
@@ -30,6 +34,4 @@ pub enum Error {
     InvalidFunctionNameConstruct(),
     #[error("Invalid function name: '{0}'")]
     InvalidFunctionName(String),
-    #[error("Unsupported vararg in signature of function '{0}'")]
-    UnsupportedVarargInFunctionSignature(String),
 }

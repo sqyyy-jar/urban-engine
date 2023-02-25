@@ -18,11 +18,13 @@ pub struct Binary {
 
 impl Default for Binary {
     fn default() -> Self {
-        Self {
-            namespace: "<annonymous>".to_string(),
+        let mut res = Self {
+            namespace: "<anonymous>".to_string(),
             statics: Vec::with_capacity(0),
-            path: HashMap::with_capacity(0),
-        }
+            path: HashMap::with_capacity(1),
+        };
+        res.path.insert(res.namespace.clone(), PathNode::default());
+        res
     }
 }
 
@@ -43,8 +45,16 @@ impl Default for PathNode {
 
 #[derive(Debug)]
 pub enum PathFunc {
-    CompiledFunc { args_count: usize, code: Vec<u8> },
-    UncompiledFunc { args_count: usize, body: () },
+    CompiledFunc {
+        name: String,
+        args_count: usize,
+        code: Vec<u8>,
+    },
+    UncompiledFunc {
+        name: String,
+        args_count: usize,
+        body: (),
+    },
 }
 
 #[derive(Debug)]
@@ -114,7 +124,6 @@ pub fn parse(source: &str, _outfile: &mut impl Write) -> Result<()> {
             Stat::DoBlock(_) => unimplemented!("DoBlock"),
             Stat::FuncStat(func) => self::func::parse_func(&mut binary, func, stat.source)?,
             Stat::LocalStat(_) => unimplemented!("LocalStat"),
-            Stat::LabelStat(_) => unimplemented!("LabelStat"),
             Stat::AssignStat(assign) => self::root::parse_assign(&mut binary, assign, stat.source)?,
             Stat::CallStat(_) => unimplemented!("CallStat"),
             Stat::CommentStat(_) => {}

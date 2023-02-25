@@ -1,6 +1,6 @@
 use anyhow::Result;
 use rslua::{
-    ast::{FuncStat, Param},
+    ast::{FuncStat, Param, Stat},
     types::Source,
 };
 
@@ -46,12 +46,27 @@ pub fn parse_func(binary: &mut Binary, func: FuncStat, _source: Source) -> Resul
         variables.push(LocalVariable { name: param_name });
     }
     let block = body.block.stats;
-    for _stat in block {
-        todo!()
+    for stat in block {
+        match stat.stat {
+            Stat::IfStat(_) => todo!(),
+            Stat::WhileStat(_) => todo!(),
+            Stat::DoBlock(_) => todo!(),
+            Stat::ForStat(_) => todo!(),
+            Stat::RepeatStat(_) => todo!(),
+            Stat::FuncStat(_) => todo!(),
+            Stat::LocalStat(_) => todo!(),
+            Stat::RetStat(_) => todo!(),
+            Stat::BreakStat(_) => todo!(),
+            Stat::AssignStat(_) => todo!(),
+            Stat::CallStat(_) => todo!(),
+            Stat::CommentStat(_) => {}
+            _ => return Err(Error::UnsupportedElement(stat.source)),
+        }
     }
     package.funcs.push(PathFunc::UncompiledFunc {
+        name,
         args_count,
         body: (),
     });
-    todo!()
+    Ok(())
 }
