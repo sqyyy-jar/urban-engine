@@ -1,6 +1,6 @@
 use anyhow::Result;
 use rslua::{
-    ast::{FuncStat, Param, Stat},
+    ast::{FuncStat, FuncType, LocalStat, Param, Stat},
     types::Source,
 };
 
@@ -16,7 +16,7 @@ pub fn parse_func(binary: &mut Binary, func: FuncStat, _source: Source) -> Resul
         .get_mut(&binary.namespace)
         .expect("Project namespace");
     let FuncStat {
-        func_type: _,
+        func_type,
         mut func_name,
         body,
     } = func;
@@ -53,10 +53,8 @@ pub fn parse_func(binary: &mut Binary, func: FuncStat, _source: Source) -> Resul
             Stat::DoBlock(_) => todo!(),
             Stat::ForStat(_) => todo!(),
             Stat::RepeatStat(_) => todo!(),
-            Stat::FuncStat(_) => todo!(),
-            Stat::LocalStat(_) => todo!(),
+            Stat::LocalStat(local) => parse_local(local, stat.source)?,
             Stat::RetStat(_) => todo!(),
-            Stat::BreakStat(_) => todo!(),
             Stat::AssignStat(_) => todo!(),
             Stat::CallStat(_) => todo!(),
             Stat::CommentStat(_) => {}
@@ -65,8 +63,16 @@ pub fn parse_func(binary: &mut Binary, func: FuncStat, _source: Source) -> Resul
     }
     package.funcs.push(PathFunc::UncompiledFunc {
         name,
+        public: func_type == FuncType::Global,
         args_count,
         body: (),
     });
+    Ok(())
+}
+
+fn parse_local(assign: LocalStat, source: Source) -> Result<(), Error> {
+    if assign.names.len() != assign.exprs.len() {
+        return Err(Error::InvalidAssignment(source));
+    }
     Ok(())
 }

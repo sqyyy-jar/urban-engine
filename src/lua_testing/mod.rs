@@ -16,6 +16,18 @@ pub struct Binary {
     pub path: HashMap<String, PathNode>,
 }
 
+impl Binary {
+    pub fn new(namespace: impl Into<String>) -> Self {
+        let mut res = Self {
+            namespace: namespace.into(),
+            statics: Vec::with_capacity(0),
+            path: HashMap::with_capacity(1),
+        };
+        res.path.insert(res.namespace.clone(), PathNode::default());
+        res
+    }
+}
+
 impl Default for Binary {
     fn default() -> Self {
         let mut res = Self {
@@ -52,6 +64,7 @@ pub enum PathFunc {
     },
     UncompiledFunc {
         name: String,
+        public: bool,
         args_count: usize,
         body: (),
     },
@@ -113,7 +126,7 @@ impl Display for ConstType {
     }
 }
 
-pub fn parse(source: &str, _outfile: &mut impl Write) -> Result<()> {
+pub fn parse(source: &str, _outfile: &mut impl Write) -> Result<(), Error> {
     let mut binary = Binary::default();
     let mut lexer = rslua::lexer::Lexer::new();
     let r1 = lexer.run(source).unwrap();
@@ -128,7 +141,7 @@ pub fn parse(source: &str, _outfile: &mut impl Write) -> Result<()> {
             Stat::CallStat(_) => unimplemented!("CallStat"),
             Stat::CommentStat(_) => {}
             _ => {
-                return Err(Error::UnsupportedRootElement(stat.source).into());
+                return Err(Error::UnsupportedRootElement(stat.source));
             }
         }
     }

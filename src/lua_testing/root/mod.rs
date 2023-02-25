@@ -10,9 +10,9 @@ use rslua::{
 
 use super::{error::Error, Binary, ConstValue};
 
-pub fn parse_assign(binary: &mut Binary, assign: AssignStat, source: Source) -> Result<()> {
+pub fn parse_assign(binary: &mut Binary, assign: AssignStat, source: Source) -> Result<(), Error> {
     if assign.left.len() != assign.right.len() {
-        return Err(Error::InvalidAssignment(source).into());
+        return Err(Error::InvalidAssignment(source));
     }
     let len = assign.left.len();
     for i in 0..len {
@@ -32,17 +32,17 @@ pub fn parse_assign(binary: &mut Binary, assign: AssignStat, source: Source) -> 
     Ok(())
 }
 
-fn parse_assign_suffixed(binary: &mut Binary, expr: &SuffixedExpr) -> Result<ConstValue> {
+fn parse_assign_suffixed(binary: &mut Binary, expr: &SuffixedExpr) -> Result<ConstValue, Error> {
     // TODO: Change this to not collect all components
     let mut ident = String::new();
     let mut exprs = None;
     match expr.primary.as_ref() {
         Expr::Name(name) => ident.push_str(name),
-        _ => return Err(Error::InvalidConstCall().into()),
+        _ => return Err(Error::InvalidConstCall()),
     }
     for suffix in &expr.suffixes {
         if exprs.is_some() {
-            return Err(Error::InvalidConstCall().into());
+            return Err(Error::InvalidConstCall());
         }
         match suffix {
             Suffix::Attr(attr) => {
@@ -62,19 +62,19 @@ fn parse_assign_suffixed(binary: &mut Binary, expr: &SuffixedExpr) -> Result<Con
         }
     }
     let Some(exprs) = exprs else {
-        return Err(Error::InvalidConstCall().into());
+        return Err(Error::InvalidConstCall());
     };
     let mut args = Vec::with_capacity(exprs.len());
     for expr in exprs {
         args.push(resolve_expr(binary, expr)?);
     }
     let Some(func) = const_funcs::FUNCS.get(&ident) else {
-        return Err(Error::InvalidConstCallUnknown(ident).into());
+        return Err(Error::InvalidConstCallUnknown(ident));
     };
     func(binary, &args)
 }
 
-fn resolve_expr(binary: &mut Binary, expr: &Expr) -> Result<ConstValue> {
+fn resolve_expr(binary: &mut Binary, expr: &Expr) -> Result<ConstValue, Error> {
     match expr {
         Expr::Nil => Ok(ConstValue::UInt { value: 0 }),
         Expr::True => Ok(ConstValue::UInt { value: u64::MAX }),
@@ -113,7 +113,7 @@ fn resolve_expr(binary: &mut Binary, expr: &Expr) -> Result<ConstValue> {
                     UnOp::Minus => Ok(ConstValue::Int { value: -value }),
                     UnOp::Not | UnOp::BNot => Ok(ConstValue::Int { value: !value }),
                     UnOp::None => Ok(ConstValue::Int { value }),
-                    op => Err(Error::InvalidUnaryOperator(expr, op).into()),
+                    op => Err(Error::InvalidUnaryOperator(expr, op)),
                 },
                 ConstValue::UInt { value } => match un_expr.op {
                     UnOp::Minus => Ok(ConstValue::Int {
@@ -121,25 +121,19 @@ fn resolve_expr(binary: &mut Binary, expr: &Expr) -> Result<ConstValue> {
                     }),
                     UnOp::Not | UnOp::BNot => Ok(ConstValue::UInt { value: !value }),
                     UnOp::None => Ok(ConstValue::UInt { value }),
-                    op => Err(Error::InvalidUnaryOperator(expr, op).into()),
+                    op => Err(Error::InvalidUnaryOperator(expr, op)),
                 },
                 ConstValue::Float { value } => match un_expr.op {
                     UnOp::Minus => Ok(ConstValue::Float { value: -value }),
                     UnOp::None => Ok(ConstValue::Float { value }),
-                    op => Err(Error::InvalidUnaryOperator(expr, op).into()),
+                    op => Err(Error::InvalidUnaryOperator(expr, op)),
                 },
-                ConstValue::String { .. } => {
-                    Err(Error::InvalidUnaryOperator(expr, un_expr.op).into())
-                }
-                ConstValue::Buffer { .. } => {
-                    Err(Error::InvalidUnaryOperator(expr, un_expr.op).into())
-                }
+                ConstValue::String { .. } => Err(Error::InvalidUnaryOperator(expr, un_expr.op)),
+                ConstValue::Buffer { .. } => Err(Error::InvalidUnaryOperator(expr, un_expr.op)),
                 ConstValue::BufferOffset { .. } => {
-                    Err(Error::InvalidUnaryOperator(expr, un_expr.op).into())
+                    Err(Error::InvalidUnaryOperator(expr, un_expr.op))
                 }
-                ConstValue::Const { .. } => {
-                    Err(Error::InvalidUnaryOperator(expr, un_expr.op).into())
-                }
+                ConstValue::Const { .. } => Err(Error::InvalidUnaryOperator(expr, un_expr.op)),
             }
         }
         Expr::SuffixedExpr(expr) => parse_assign_suffixed(binary, expr),
