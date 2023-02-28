@@ -301,15 +301,25 @@ public class OpCodes {
     public static final int L3_MOV = 0b11111111111111111_00001_00000_00000;
     public static final int END_L3_MOV = 0b11111111111111111_00001_11111_11111;
     /**
-     * {@code branch.r Xdst}
+     * {@code branch Xdst}
      */
-    public static final int L4_BRANCH_R = 0b1111111111111111111111_00000_00000;
-    public static final int END_L4_BRANCH_R = 0b1111111111111111111111_00000_11111;
+    public static final int L4_BRANCH = 0b1111111111111111111111_00000_00000;
+    public static final int END_L4_BRANCH = 0b1111111111111111111111_00000_11111;
     /**
-     * {@code branch.l.r Xdst}
+     * {@code branch.l Xdst}
      */
-    public static final int L4_BRANCH_L_R = 0b1111111111111111111111_00001_00000;
-    public static final int END_L4_BRANCH_L_R = 0b1111111111111111111111_00001_11111;
+    public static final int L4_BRANCH_L = 0b1111111111111111111111_00001_00000;
+    public static final int END_L4_BRANCH_L = 0b1111111111111111111111_00001_11111;
+    /**
+     * {@code branch.ld Xdst}
+     */
+    public static final int L4_BRANCH_LD = 0b1111111111111111111111_00010_00000;
+    public static final int END_L4_BRANCH_LD = 0b1111111111111111111111_00010_11111;
+    /**
+     * {@code branch.l.ld Xdst}
+     */
+    public static final int L4_BRANCH_L_LD = 0b1111111111111111111111_00011_00000;
+    public static final int END_L4_BRANCH_L_LD = 0b1111111111111111111111_00011_11111;
     /**
      * {@code nop}
      */

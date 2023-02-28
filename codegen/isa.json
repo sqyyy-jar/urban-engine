@@ -471,13 +471,25 @@
       "bits": 5,
       "instructions": [
         {
-          "name": "branch.r",
+          "name": "branch",
           "components": [
             "r:dst"
           ]
         },
         {
-          "name": "branch.l.r",
+          "name": "branch.l",
+          "components": [
+            "r:dst"
+          ]
+        },
+        {
+          "name": "branch.ld",
+          "components": [
+            "r:dst"
+          ]
+        },
+        {
+          "name": "branch.l.ld",
           "components": [
             "r:dst"
           ]

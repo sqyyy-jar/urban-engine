@@ -181,12 +181,18 @@ public class OpCodes
     /// <c>mov Xdst Xsrc</c>
     public static readonly uint L3Mov = 0b11111111111111111_00001_00000_00000;
     public static readonly uint EndL3Mov = 0b11111111111111111_00001_11111_11111;
-    /// <c>branch.r Xdst</c>
-    public static readonly uint L4BranchR = 0b1111111111111111111111_00000_00000;
-    public static readonly uint EndL4BranchR = 0b1111111111111111111111_00000_11111;
-    /// <c>branch.l.r Xdst</c>
-    public static readonly uint L4BranchLR = 0b1111111111111111111111_00001_00000;
-    public static readonly uint EndL4BranchLR = 0b1111111111111111111111_00001_11111;
+    /// <c>branch Xdst</c>
+    public static readonly uint L4Branch = 0b1111111111111111111111_00000_00000;
+    public static readonly uint EndL4Branch = 0b1111111111111111111111_00000_11111;
+    /// <c>branch.l Xdst</c>
+    public static readonly uint L4BranchL = 0b1111111111111111111111_00001_00000;
+    public static readonly uint EndL4BranchL = 0b1111111111111111111111_00001_11111;
+    /// <c>branch.ld Xdst</c>
+    public static readonly uint L4BranchLd = 0b1111111111111111111111_00010_00000;
+    public static readonly uint EndL4BranchLd = 0b1111111111111111111111_00010_11111;
+    /// <c>branch.l.ld Xdst</c>
+    public static readonly uint L4BranchLLd = 0b1111111111111111111111_00011_00000;
+    public static readonly uint EndL4BranchLLd = 0b1111111111111111111111_00011_11111;
     /// <c>nop</c>
     public static readonly uint L5Nop = 0b111111111111111111111111111_00000;
     public static readonly uint EndL5Nop = 0b111111111111111111111111111_00000;
