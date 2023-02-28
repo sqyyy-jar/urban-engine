@@ -74,6 +74,7 @@ public class Instructions
 
     public void Verify()
     {
+        var usedStates = 0uL;
         var lostBits = 0u;
         var layerId = 0;
         foreach (var layer in Layers)
@@ -85,6 +86,11 @@ public class Instructions
             }
 
             var maxInstructionCount = (1u << (int)layer.Bits) - 1;
+            if (layerId == Layers.Count - 1)
+            {
+                maxInstructionCount += 1;
+            }
+
             var instructionCount = layer.Instructions.Count;
             if (instructionCount > maxInstructionCount)
             {
@@ -92,6 +98,7 @@ public class Instructions
                     $"Too high amount of instructions on L{layerId}: {instructionCount}/{maxInstructionCount}");
             }
 
+            usedStates += (ulong)instructionCount;
             foreach (var instruction in layer.Instructions)
             {
                 var usedBits =
@@ -102,6 +109,9 @@ public class Instructions
                         $"Too high amount of instruction bits on L{layerId}/{instruction.Name}: {usedBits}");
                 }
 
+                var componentBits =
+                    instruction.Components.Aggregate(0u, (current, component) => current + component.Bits);
+                usedStates += (1uL << (int)componentBits) - 1uL;
                 lostBits += 32 - usedBits;
                 if (usedBits < 32)
                 {
@@ -112,7 +122,9 @@ public class Instructions
             layerId++;
         }
 
-        Console.WriteLine($"ISA losses {lostBits} bits.");
+        Console.WriteLine($"ISA looses {lostBits} bits.");
+        Console.WriteLine(
+            $"ISA has {usedStates}/{uint.MaxValue + 1uL} ({Math.Round(usedStates / (double)(uint.MaxValue + 1uL) * 100.0)}%) states used.");
     }
 
     public override string ToString()
