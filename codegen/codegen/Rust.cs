@@ -21,6 +21,8 @@ public class Rust : Codegen
 
             //! This module contains opcode constants for ISA version `{instructions.Version}`.
 
+            #![allow(clippy::unusual_byte_groupings)]
+
             """);
         var layerId = 0;
         foreach (var layer in instructions.Layers)

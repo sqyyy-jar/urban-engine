@@ -3,6 +3,8 @@
 
 //! This module contains opcode constants for ISA version `1.0`.
 
+#![allow(clippy::unusual_byte_groupings)]
+
 /// `add Xdst Xlhs u17`
 pub const L0_ADD: u32 = 0b00000_00000_00000_00000000000000000;
 pub const END_L0_ADD: u32 = 0b00000_11111_11111_11111111111111111;
