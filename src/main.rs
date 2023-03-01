@@ -11,10 +11,12 @@ use crate::lua_testing::parse;
 
 pub mod asm;
 pub mod assembler;
+pub mod bus;
 pub mod context;
 pub mod err;
 pub mod int;
 pub mod lua_testing;
+pub mod opcodes;
 pub mod rt;
 pub mod vmod;
 
