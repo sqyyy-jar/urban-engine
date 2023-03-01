@@ -3,7 +3,7 @@
 
 //! This module contains an instruction bus trait for ISA version `1.0`.
 
-use crate::opcodes;
+use crate::opcodes::*;
 
 pub trait InstructionBus {
     /// `add Xdst Xlhs u17`

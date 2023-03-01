@@ -91,7 +91,7 @@ public class Rust : Codegen
 
             //! This module contains an instruction bus trait for ISA version `{instructions.Version}`.
 
-            use crate::opcodes;
+            use crate::opcodes::*;
 
             """);
         instructionBus.WriteLine("pub trait InstructionBus {");
