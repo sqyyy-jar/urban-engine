@@ -37,6 +37,14 @@
           ]
         },
         {
+          "name": "rem",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "u:rhs:17"
+          ]
+        },
+        {
           "name": "adds",
           "components": [
             "r:dst",
@@ -69,7 +77,16 @@
           ]
         },
         {
+          "name": "rems",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "i:rhs:17"
+          ]
+        },
+        {
           "name": "ldr",
+          "longname": "load to register",
           "components": [
             "r:dst",
             "i:src:22"
@@ -77,6 +94,7 @@
         },
         {
           "name": "str",
+          "longname": "store from register",
           "components": [
             "i:dst:22",
             "r:src"
@@ -104,18 +122,21 @@
         },
         {
           "name": "branch.l",
+          "longname": "branch linked",
           "components": [
             "i:dst:27"
           ]
         },
         {
           "name": "branch.ld",
+          "longname": "branch to loaded address",
           "components": [
             "i:src:27"
           ]
         },
         {
           "name": "branch.l.ld",
+          "longname": "branch linked to loaded address",
           "components": [
             "i:src:27"
           ]
@@ -193,6 +214,7 @@
         },
         {
           "name": "ldr",
+          "longname": "load to register",
           "components": [
             "r:dst",
             "r:src",
@@ -201,6 +223,7 @@
         },
         {
           "name": "ldrb",
+          "longname": "load byte to register",
           "components": [
             "r:dst",
             "r:src",
@@ -209,6 +232,7 @@
         },
         {
           "name": "ldrh",
+          "longname": "load half to register",
           "components": [
             "r:dst",
             "r:src",
@@ -217,6 +241,7 @@
         },
         {
           "name": "ldrw",
+          "longname": "load word to register",
           "components": [
             "r:dst",
             "r:src",
@@ -225,6 +250,7 @@
         },
         {
           "name": "str",
+          "longname": "store from register",
           "components": [
             "r:dst",
             "r:src",
@@ -233,6 +259,7 @@
         },
         {
           "name": "strb",
+          "longname": "store byte from register",
           "components": [
             "r:dst",
             "r:src",
@@ -241,6 +268,7 @@
         },
         {
           "name": "strh",
+          "longname": "store half from register",
           "components": [
             "r:dst",
             "r:src",
@@ -249,6 +277,7 @@
         },
         {
           "name": "strw",
+          "longname": "store word from register",
           "components": [
             "r:dst",
             "r:src",
@@ -257,18 +286,21 @@
         },
         {
           "name": "int",
+          "longname": "interrupt",
           "components": [
             "u:id:16"
           ]
         },
         {
-          "name": "n_call",
+          "name": "ncall",
+          "longname": "native call",
           "components": [
             "u:id:21"
           ]
         },
         {
-          "name": "v_call",
+          "name": "vcall",
+          "longname": "virtual call",
           "components": [
             "u:id:21"
           ]
@@ -311,6 +343,14 @@
           ]
         },
         {
+          "name": "rem",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
           "name": "adds",
           "components": [
             "r:dst",
@@ -343,6 +383,14 @@
           ]
         },
         {
+          "name": "rems",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
           "name": "addf",
           "components": [
             "r:dst",
@@ -368,6 +416,14 @@
         },
         {
           "name": "divf",
+          "components": [
+            "r:dst",
+            "r:lhs",
+            "r:rhs"
+          ]
+        },
+        {
+          "name": "remf",
           "components": [
             "r:dst",
             "r:lhs",
@@ -464,6 +520,22 @@
             "r:dst",
             "r:src"
           ]
+        },
+        {
+          "name": "fti",
+          "longname": "float to int",
+          "components": [
+            "r:dst",
+            "r:src"
+          ]
+        },
+        {
+          "name": "itf",
+          "longname": "int to float",
+          "components": [
+            "r:dst",
+            "r:src"
+          ]
         }
       ]
     },
@@ -478,18 +550,105 @@
         },
         {
           "name": "branch.l",
+          "longname": "branch linked",
           "components": [
             "r:dst"
           ]
         },
         {
           "name": "branch.ld",
+          "longname": "branch to loaded address",
+          "components": [
+            "r:src"
+          ]
+        },
+        {
+          "name": "branch.l.ld",
+          "longname": "branch linked to loaded address",
+          "components": [
+            "r:src"
+          ]
+        },
+        {
+          "name": "branch.bo",
+          "longname": "branch with base offset",
           "components": [
             "r:dst"
           ]
         },
         {
-          "name": "branch.l.ld",
+          "name": "branch.l.bo",
+          "longname": "branch linked with base offset",
+          "components": [
+            "r:dst"
+          ]
+        },
+        {
+          "name": "branch.ld.bo",
+          "longname": "branch to loaded address with base offset",
+          "components": [
+            "r:src"
+          ]
+        },
+        {
+          "name": "branch.bo.ld",
+          "longname": "branch to loaded base offset address",
+          "components": [
+            "r:src"
+          ]
+        },
+        {
+          "name": "branch.bo.ld.bo",
+          "longname": "branch to loaded base offset address with base offset",
+          "components": [
+            "r:src"
+          ]
+        },
+        {
+          "name": "branch.l.ld.bo",
+          "longname": "branch linked to loaded address with base offset",
+          "components": [
+            "r:src"
+          ]
+        },
+        {
+          "name": "branch.l.bo.ld",
+          "longname": "branch linked to loaded base offset address",
+          "components": [
+            "r:src"
+          ]
+        },
+        {
+          "name": "branch.l.bo.ld.bo",
+          "longname": "branch linked to loaded base offset address with base offset",
+          "components": [
+            "r:src"
+          ]
+        },
+        {
+          "name": "ncall",
+          "longname": "native call",
+          "components": [
+            "r:id"
+          ]
+        },
+        {
+          "name": "vcall",
+          "longname": "virtual call",
+          "components": [
+            "r:id"
+          ]
+        },
+        {
+          "name": "ldbo",
+          "longname": "load base offset",
+          "components": [
+            "r:dst"
+          ]
+        },
+        {
+          "name": "ldpc",
+          "longname": "load program counter",
           "components": [
             "r:dst"
           ]
@@ -501,6 +660,7 @@
       "instructions": [
         {
           "name": "nop",
+          "longname": "no operation",
           "components": []
         },
         {
