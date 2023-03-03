@@ -3,6 +3,7 @@ use std::{
     path::PathBuf,
 };
 
+use binary::Header;
 use clap::{arg, command, error::ErrorKind, value_parser, ArgAction, Command};
 use context::{noverify::UnsafeContext, safe::SafeContext, Context};
 use vmod::util::Util;
@@ -10,6 +11,7 @@ use vmod::util::Util;
 use crate::lua_testing::parse;
 
 pub mod assembler;
+pub mod binary;
 pub mod bus;
 pub mod context;
 pub mod err;
@@ -54,18 +56,29 @@ fn main() {
                 cmd.error(ErrorKind::Io, err).exit();
             }
             let mut content = content.unwrap();
+            let header = Header::read(&content);
+            if let Err(err) = header {
+                cmd.error(ErrorKind::Format, err).exit();
+            };
+            let header = header.unwrap();
+            if !header.is_executable() {
+                cmd.error(ErrorKind::Format, "Binary is not executable")
+                    .exit();
+            }
             if matches.get_flag("noverify") {
-                let mut ctx =
-                    UnsafeContext::new(content.as_mut_ptr() as _, content.as_mut_ptr() as _);
+                let mut ctx = UnsafeContext::new(
+                    (content.as_mut_ptr() as usize + 16) as _,
+                    (content.as_mut_ptr() as usize + 16 + header.entrypoint as usize) as _,
+                );
                 ctx.load_vmod(&Util);
                 loop {
                     ctx.decode_instruction()
                 }
             } else {
                 let mut ctx = SafeContext::new(
-                    content.as_mut_ptr() as _,
-                    content.as_mut_ptr() as _,
-                    content.len(),
+                    (content.as_mut_ptr() as usize + 16) as _,
+                    (content.as_mut_ptr() as usize + 16 + header.entrypoint as usize) as _,
+                    content.len() - 16,
                 );
                 ctx.load_vmod(&Util);
                 while !ctx.has_halted() {

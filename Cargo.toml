@@ -4,7 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-clap = { version = "4.1.6", features = ["cargo"] }
+clap = { version = "4.1", features = ["cargo"] }
+byteorder = "1.4"
+# May be not needed
 rslua = "0.2"
 phf = { version = "0.11", features = ["macros"] }
 ariadne = "0.1"
