@@ -9,7 +9,6 @@ use vmod::util::Util;
 
 use crate::lua_testing::parse;
 
-pub mod asm;
 pub mod assembler;
 pub mod bus;
 pub mod context;
