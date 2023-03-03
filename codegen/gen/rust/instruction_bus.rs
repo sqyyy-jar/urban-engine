@@ -18,6 +18,9 @@ pub trait InstructionBus {
     /// `div Xdst Xlhs u17`
     fn l0_div(&mut self, insn: u32);
 
+    /// `rem Xdst Xlhs u17`
+    fn l0_rem(&mut self, insn: u32);
+
     /// `adds Xdst Xlhs i17`
     fn l0_adds(&mut self, insn: u32);
 
@@ -29,6 +32,9 @@ pub trait InstructionBus {
 
     /// `divs Xdst Xlhs i17`
     fn l0_divs(&mut self, insn: u32);
+
+    /// `rems Xdst Xlhs i17`
+    fn l0_rems(&mut self, insn: u32);
 
     /// `ldr Xdst i22`
     fn l0_ldr(&mut self, insn: u32);
@@ -108,11 +114,11 @@ pub trait InstructionBus {
     /// `int u16`
     fn l1_int(&mut self, insn: u32);
 
-    /// `n_call u21`
-    fn l1_n_call(&mut self, insn: u32);
+    /// `ncall u21`
+    fn l1_ncall(&mut self, insn: u32);
 
-    /// `v_call u21`
-    fn l1_v_call(&mut self, insn: u32);
+    /// `vcall u21`
+    fn l1_vcall(&mut self, insn: u32);
 
     /// `add Xdst Xlhs Xrhs`
     fn l2_add(&mut self, insn: u32);
@@ -126,6 +132,9 @@ pub trait InstructionBus {
     /// `div Xdst Xlhs Xrhs`
     fn l2_div(&mut self, insn: u32);
 
+    /// `rem Xdst Xlhs Xrhs`
+    fn l2_rem(&mut self, insn: u32);
+
     /// `adds Xdst Xlhs Xrhs`
     fn l2_adds(&mut self, insn: u32);
 
@@ -138,6 +147,9 @@ pub trait InstructionBus {
     /// `divs Xdst Xlhs Xrhs`
     fn l2_divs(&mut self, insn: u32);
 
+    /// `rems Xdst Xlhs Xrhs`
+    fn l2_rems(&mut self, insn: u32);
+
     /// `addf Xdst Xlhs Xrhs`
     fn l2_addf(&mut self, insn: u32);
 
@@ -149,6 +161,9 @@ pub trait InstructionBus {
 
     /// `divf Xdst Xlhs Xrhs`
     fn l2_divf(&mut self, insn: u32);
+
+    /// `remf Xdst Xlhs Xrhs`
+    fn l2_remf(&mut self, insn: u32);
 
     /// `and Xdst Xlhs Xrhs`
     fn l2_and(&mut self, insn: u32);
@@ -183,17 +198,59 @@ pub trait InstructionBus {
     /// `mov Xdst Xsrc`
     fn l3_mov(&mut self, insn: u32);
 
+    /// `fti Xdst Xsrc`
+    fn l3_fti(&mut self, insn: u32);
+
+    /// `itf Xdst Xsrc`
+    fn l3_itf(&mut self, insn: u32);
+
     /// `branch Xdst`
     fn l4_branch(&mut self, insn: u32);
 
     /// `branch.l Xdst`
     fn l4_branch_l(&mut self, insn: u32);
 
-    /// `branch.ld Xdst`
+    /// `branch.ld Xsrc`
     fn l4_branch_ld(&mut self, insn: u32);
 
-    /// `branch.l.ld Xdst`
+    /// `branch.l.ld Xsrc`
     fn l4_branch_l_ld(&mut self, insn: u32);
+
+    /// `branch.bo Xdst`
+    fn l4_branch_bo(&mut self, insn: u32);
+
+    /// `branch.l.bo Xdst`
+    fn l4_branch_l_bo(&mut self, insn: u32);
+
+    /// `branch.ld.bo Xsrc`
+    fn l4_branch_ld_bo(&mut self, insn: u32);
+
+    /// `branch.bo.ld Xsrc`
+    fn l4_branch_bo_ld(&mut self, insn: u32);
+
+    /// `branch.bo.ld.bo Xsrc`
+    fn l4_branch_bo_ld_bo(&mut self, insn: u32);
+
+    /// `branch.l.ld.bo Xsrc`
+    fn l4_branch_l_ld_bo(&mut self, insn: u32);
+
+    /// `branch.l.bo.ld Xsrc`
+    fn l4_branch_l_bo_ld(&mut self, insn: u32);
+
+    /// `branch.l.bo.ld.bo Xsrc`
+    fn l4_branch_l_bo_ld_bo(&mut self, insn: u32);
+
+    /// `ncall Xid`
+    fn l4_ncall(&mut self, insn: u32);
+
+    /// `vcall Xid`
+    fn l4_vcall(&mut self, insn: u32);
+
+    /// `ldbo Xdst`
+    fn l4_ldbo(&mut self, insn: u32);
+
+    /// `ldpc Xdst`
+    fn l4_ldpc(&mut self, insn: u32);
 
     /// `nop`
     fn l5_nop(&mut self, insn: u32);
@@ -209,10 +266,12 @@ pub trait InstructionBus {
             L0_SUB..=END_L0_SUB => self.l0_sub(insn),
             L0_MUL..=END_L0_MUL => self.l0_mul(insn),
             L0_DIV..=END_L0_DIV => self.l0_div(insn),
+            L0_REM..=END_L0_REM => self.l0_rem(insn),
             L0_ADDS..=END_L0_ADDS => self.l0_adds(insn),
             L0_SUBS..=END_L0_SUBS => self.l0_subs(insn),
             L0_MULS..=END_L0_MULS => self.l0_muls(insn),
             L0_DIVS..=END_L0_DIVS => self.l0_divs(insn),
+            L0_REMS..=END_L0_REMS => self.l0_rems(insn),
             L0_LDR..=END_L0_LDR => self.l0_ldr(insn),
             L0_STR..=END_L0_STR => self.l0_str(insn),
             L0_MOV..=END_L0_MOV => self.l0_mov(insn),
@@ -239,20 +298,23 @@ pub trait InstructionBus {
             L1_STRH..=END_L1_STRH => self.l1_strh(insn),
             L1_STRW..=END_L1_STRW => self.l1_strw(insn),
             L1_INT..=END_L1_INT => self.l1_int(insn),
-            L1_N_CALL..=END_L1_N_CALL => self.l1_n_call(insn),
-            L1_V_CALL..=END_L1_V_CALL => self.l1_v_call(insn),
+            L1_NCALL..=END_L1_NCALL => self.l1_ncall(insn),
+            L1_VCALL..=END_L1_VCALL => self.l1_vcall(insn),
             L2_ADD..=END_L2_ADD => self.l2_add(insn),
             L2_SUB..=END_L2_SUB => self.l2_sub(insn),
             L2_MUL..=END_L2_MUL => self.l2_mul(insn),
             L2_DIV..=END_L2_DIV => self.l2_div(insn),
+            L2_REM..=END_L2_REM => self.l2_rem(insn),
             L2_ADDS..=END_L2_ADDS => self.l2_adds(insn),
             L2_SUBS..=END_L2_SUBS => self.l2_subs(insn),
             L2_MULS..=END_L2_MULS => self.l2_muls(insn),
             L2_DIVS..=END_L2_DIVS => self.l2_divs(insn),
+            L2_REMS..=END_L2_REMS => self.l2_rems(insn),
             L2_ADDF..=END_L2_ADDF => self.l2_addf(insn),
             L2_SUBF..=END_L2_SUBF => self.l2_subf(insn),
             L2_MULF..=END_L2_MULF => self.l2_mulf(insn),
             L2_DIVF..=END_L2_DIVF => self.l2_divf(insn),
+            L2_REMF..=END_L2_REMF => self.l2_remf(insn),
             L2_AND..=END_L2_AND => self.l2_and(insn),
             L2_OR..=END_L2_OR => self.l2_or(insn),
             L2_XOR..=END_L2_XOR => self.l2_xor(insn),
@@ -264,10 +326,24 @@ pub trait InstructionBus {
             L2_CMPF..=END_L2_CMPF => self.l2_cmpf(insn),
             L3_NOT..=END_L3_NOT => self.l3_not(insn),
             L3_MOV..=END_L3_MOV => self.l3_mov(insn),
+            L3_FTI..=END_L3_FTI => self.l3_fti(insn),
+            L3_ITF..=END_L3_ITF => self.l3_itf(insn),
             L4_BRANCH..=END_L4_BRANCH => self.l4_branch(insn),
             L4_BRANCH_L..=END_L4_BRANCH_L => self.l4_branch_l(insn),
             L4_BRANCH_LD..=END_L4_BRANCH_LD => self.l4_branch_ld(insn),
             L4_BRANCH_L_LD..=END_L4_BRANCH_L_LD => self.l4_branch_l_ld(insn),
+            L4_BRANCH_BO..=END_L4_BRANCH_BO => self.l4_branch_bo(insn),
+            L4_BRANCH_L_BO..=END_L4_BRANCH_L_BO => self.l4_branch_l_bo(insn),
+            L4_BRANCH_LD_BO..=END_L4_BRANCH_LD_BO => self.l4_branch_ld_bo(insn),
+            L4_BRANCH_BO_LD..=END_L4_BRANCH_BO_LD => self.l4_branch_bo_ld(insn),
+            L4_BRANCH_BO_LD_BO..=END_L4_BRANCH_BO_LD_BO => self.l4_branch_bo_ld_bo(insn),
+            L4_BRANCH_L_LD_BO..=END_L4_BRANCH_L_LD_BO => self.l4_branch_l_ld_bo(insn),
+            L4_BRANCH_L_BO_LD..=END_L4_BRANCH_L_BO_LD => self.l4_branch_l_bo_ld(insn),
+            L4_BRANCH_L_BO_LD_BO..=END_L4_BRANCH_L_BO_LD_BO => self.l4_branch_l_bo_ld_bo(insn),
+            L4_NCALL..=END_L4_NCALL => self.l4_ncall(insn),
+            L4_VCALL..=END_L4_VCALL => self.l4_vcall(insn),
+            L4_LDBO..=END_L4_LDBO => self.l4_ldbo(insn),
+            L4_LDPC..=END_L4_LDPC => self.l4_ldpc(insn),
             L5_NOP..=END_L5_NOP => self.l5_nop(insn),
             L5_HALT..=END_L5_HALT => self.l5_halt(insn),
             _ => self.unknown(insn),
