@@ -96,7 +96,7 @@ impl Context for SafeContext {
 
     fn panic(&mut self, error_code: u32) -> ! {
         self.halted = true;
-        eprintln!("Runtime paniced:");
+        eprintln!("Runtime panicked:");
         for (i, reg) in self.registers.chunks(4).enumerate() {
             eprintln!(
                 " R{:<2}: 0x{:016X} | R{:<2}: 0x{:016X} | R{:<2}: 0x{:016X} | R{:<2}: 0x{:016X}",
