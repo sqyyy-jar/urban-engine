@@ -4,7 +4,7 @@ use std::{
 };
 
 use binary::Header;
-use clap::{arg, command, error::ErrorKind, value_parser, ArgAction, Command};
+use clap::{arg, command, crate_version, error::ErrorKind, value_parser, ArgAction, Command};
 use context::{noverify::UnsafeContext, safe::SafeContext, Context};
 use vmod::util::Util;
 
@@ -21,11 +21,14 @@ pub mod opcodes;
 pub mod rt;
 pub mod vmod;
 
+const BUILD_DATE: &str = env!("BUILD_DATE");
+
 fn main() {
     let mut cmd = Command::new("urban")
         .bin_name("urban")
         .subcommand_required(true)
         .subcommands([
+            command!("version").alias("v"),
             command!("run").alias("r").args([
                 arg!([BINARY] "The file to execute")
                     .required(true)
@@ -43,6 +46,10 @@ fn main() {
         ]);
     let matches = cmd.get_matches_mut();
     match matches.subcommand() {
+        Some(("version", _)) => {
+            println!("urban {} {BUILD_DATE}", crate_version!());
+            println!("Implementing Urban ISA version {}", opcodes::VERSION);
+        }
         Some(("run", matches)) => {
             let file = matches.get_one::<PathBuf>("BINARY").expect("No such file");
             if !file.exists() {
@@ -61,6 +68,10 @@ fn main() {
                 cmd.error(ErrorKind::Format, err).exit();
             };
             let header = header.unwrap();
+            if !header.has_valid_magic() {
+                cmd.error(ErrorKind::Format, "Binary has invalid byte magic")
+                    .exit();
+            }
             if !header.is_executable() {
                 cmd.error(ErrorKind::Format, "Binary is not executable")
                     .exit();

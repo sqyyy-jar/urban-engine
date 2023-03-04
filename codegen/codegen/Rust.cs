@@ -23,6 +23,8 @@ public class Rust : Codegen
 
             #![allow(clippy::unusual_byte_groupings)]
 
+            pub const VERSION: &str = "{instructions.Version}";
+
             """);
         var layerId = 0;
         foreach (var layer in instructions.Layers)
