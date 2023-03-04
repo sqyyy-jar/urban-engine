@@ -2,7 +2,7 @@
 // It is not intended for manual editing.
 
 /**
- * This class contains opcode constants for ISA version {@code 1.0}.
+ * This class contains opcode constants for ISA version {@code 1.0.0-pre}.
  */
 public class OpCodes {
     /**
