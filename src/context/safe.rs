@@ -179,6 +179,17 @@ impl InstructionBus for SafeContext {
     }
 
     #[inline(always)]
+    fn l0_rem(&mut self, insn: u32) {
+        let dst = reg(insn, 0);
+        let lhs = reg(insn, 5);
+        let rhs = immediate::<17>(insn, 10);
+        self.registers[dst] = Value {
+            uint: unsafe { self.registers[lhs].uint % rhs },
+        };
+        self.advance_counter();
+    }
+
+    #[inline(always)]
     fn l0_adds(&mut self, insn: u32) {
         let dst = reg(insn, 0);
         let lhs = reg(insn, 5);
@@ -218,6 +229,17 @@ impl InstructionBus for SafeContext {
         let rhs = signed_immediate::<17>(insn, 10);
         self.registers[dst] = Value {
             int: unsafe { self.registers[lhs].int / rhs },
+        };
+        self.advance_counter();
+    }
+
+    #[inline(always)]
+    fn l0_rems(&mut self, insn: u32) {
+        let dst = reg(insn, 0);
+        let lhs = reg(insn, 5);
+        let rhs = signed_immediate::<17>(insn, 10);
+        self.registers[dst] = Value {
+            int: unsafe { self.registers[lhs].int % rhs },
         };
         self.advance_counter();
     }
@@ -545,7 +567,7 @@ impl InstructionBus for SafeContext {
     }
 
     #[inline(always)]
-    fn l1_n_call(&mut self, insn: u32) {
+    fn l1_ncall(&mut self, insn: u32) {
         let id = immediate::<21>(insn, 0);
         let Some(func) = self.ntable.get(id as usize) else {
             panic!("Tried to ncall position 0x{id:x}");
@@ -555,7 +577,7 @@ impl InstructionBus for SafeContext {
     }
 
     #[inline(always)]
-    fn l1_v_call(&mut self, insn: u32) {
+    fn l1_vcall(&mut self, insn: u32) {
         let id = immediate::<21>(insn, 0) as usize;
         let Some(func) = self.vtable.get(&id) else {
             panic!("Tried to vcall id 0x{id:x}");
@@ -609,6 +631,17 @@ impl InstructionBus for SafeContext {
     }
 
     #[inline(always)]
+    fn l2_rem(&mut self, insn: u32) {
+        let dst = reg(insn, 0);
+        let lhs = reg(insn, 5);
+        let rhs = reg(insn, 10);
+        self.registers[dst] = Value {
+            uint: unsafe { self.registers[lhs].uint % self.registers[rhs].uint },
+        };
+        self.advance_counter();
+    }
+
+    #[inline(always)]
     fn l2_adds(&mut self, insn: u32) {
         let dst = reg(insn, 0);
         let lhs = reg(insn, 5);
@@ -653,6 +686,17 @@ impl InstructionBus for SafeContext {
     }
 
     #[inline(always)]
+    fn l2_rems(&mut self, insn: u32) {
+        let dst = reg(insn, 0);
+        let lhs = reg(insn, 5);
+        let rhs = reg(insn, 10);
+        self.registers[dst] = Value {
+            int: unsafe { self.registers[lhs].int % self.registers[rhs].int },
+        };
+        self.advance_counter();
+    }
+
+    #[inline(always)]
     fn l2_addf(&mut self, insn: u32) {
         let dst = reg(insn, 0);
         let lhs = reg(insn, 5);
@@ -692,6 +736,17 @@ impl InstructionBus for SafeContext {
         let rhs = reg(insn, 10);
         self.registers[dst] = Value {
             float: unsafe { self.registers[lhs].float / self.registers[rhs].float },
+        };
+        self.advance_counter();
+    }
+
+    #[inline(always)]
+    fn l2_remf(&mut self, insn: u32) {
+        let dst = reg(insn, 0);
+        let lhs = reg(insn, 5);
+        let rhs = reg(insn, 10);
+        self.registers[dst] = Value {
+            float: unsafe { self.registers[lhs].float % self.registers[rhs].float },
         };
         self.advance_counter();
     }
@@ -820,6 +875,26 @@ impl InstructionBus for SafeContext {
     }
 
     #[inline(always)]
+    fn l3_fti(&mut self, insn: u32) {
+        let dst = reg(insn, 0);
+        let src = reg(insn, 5);
+        self.registers[dst] = Value {
+            int: unsafe { self.registers[src].float } as i64,
+        };
+        self.advance_counter();
+    }
+
+    #[inline(always)]
+    fn l3_itf(&mut self, insn: u32) {
+        let dst = reg(insn, 0);
+        let src = reg(insn, 5);
+        self.registers[dst] = Value {
+            float: unsafe { self.registers[src].int } as f64,
+        };
+        self.advance_counter();
+    }
+
+    #[inline(always)]
     fn l4_branch(&mut self, insn: u32) {
         let dst = reg(insn, 0);
         self.set_counter(unsafe { self.registers[dst].size } as _);
@@ -837,7 +912,7 @@ impl InstructionBus for SafeContext {
     #[inline(always)]
     fn l4_branch_ld(&mut self, insn: u32) {
         let src = reg(insn, 0);
-        let res = self.load(unsafe { self.mem.offset(self.registers[src].isize) } as *mut _);
+        let res = self.load(unsafe { self.registers[src].size } as *mut _);
         self.set_counter(res);
     }
 
@@ -847,8 +922,118 @@ impl InstructionBus for SafeContext {
         self.registers[30] = Value {
             size: self.mem as usize + 4,
         };
-        let res = self.load(unsafe { self.mem.offset(self.registers[src].isize) } as *mut _);
+        let res = self.load(unsafe { self.registers[src].size } as *mut _);
         self.set_counter(res);
+    }
+
+    #[inline(always)]
+    fn l4_branch_bo(&mut self, insn: u32) {
+        let dst = reg(insn, 0);
+        self.set_counter(unsafe { self.mem_base as isize + self.registers[dst].isize } as _);
+    }
+
+    #[inline(always)]
+    fn l4_branch_l_bo(&mut self, insn: u32) {
+        let dst = reg(insn, 0);
+        self.registers[30] = Value {
+            size: self.mem as usize + 4,
+        };
+        self.set_counter(unsafe { self.mem_base as isize + self.registers[dst].isize } as _);
+    }
+
+    #[inline(always)]
+    fn l4_branch_ld_bo(&mut self, insn: u32) {
+        let src = reg(insn, 0);
+        let res = self.load(unsafe { self.registers[src].size } as *mut isize);
+        self.set_counter((self.mem_base as isize + res) as _);
+    }
+
+    #[inline(always)]
+    fn l4_branch_bo_ld(&mut self, insn: u32) {
+        let src = reg(insn, 0);
+        let res =
+            self.load(unsafe { self.mem_base as isize + self.registers[src].isize } as *mut usize);
+        self.set_counter(res as _);
+    }
+
+    #[inline(always)]
+    fn l4_branch_bo_ld_bo(&mut self, insn: u32) {
+        let src = reg(insn, 0);
+        let res =
+            self.load(unsafe { self.mem_base as isize + self.registers[src].isize } as *mut isize);
+        self.set_counter((self.mem_base as isize + res) as _);
+    }
+
+    #[inline(always)]
+    fn l4_branch_l_ld_bo(&mut self, insn: u32) {
+        let src = reg(insn, 0);
+        self.registers[30] = Value {
+            size: self.mem as usize + 4,
+        };
+        let res = self.load(unsafe { self.registers[src].size } as *mut isize);
+        self.set_counter((self.mem_base as isize + res) as _);
+    }
+
+    #[inline(always)]
+    fn l4_branch_l_bo_ld(&mut self, insn: u32) {
+        let src = reg(insn, 0);
+        self.registers[30] = Value {
+            size: self.mem as usize + 4,
+        };
+        let res =
+            self.load(unsafe { self.mem_base as isize + self.registers[src].isize } as *mut usize);
+        self.set_counter(res as _);
+    }
+
+    #[inline(always)]
+    fn l4_branch_l_bo_ld_bo(&mut self, insn: u32) {
+        let src = reg(insn, 0);
+        self.registers[30] = Value {
+            size: self.mem as usize + 4,
+        };
+        let res =
+            self.load(unsafe { self.mem_base as isize + self.registers[src].isize } as *mut isize);
+        self.set_counter((self.mem_base as isize + res) as _);
+    }
+
+    #[inline(always)]
+    fn l4_ncall(&mut self, insn: u32) {
+        let id = reg(insn, 0);
+        let id = unsafe { self.registers[id].size };
+        let Some(func) = self.ntable.get(id) else {
+            panic!("Tried to ncall position 0x{id:x}");
+        };
+        func(self);
+        self.advance_counter();
+    }
+
+    #[inline(always)]
+    fn l4_vcall(&mut self, insn: u32) {
+        let id = reg(insn, 0);
+        let id = unsafe { self.registers[id].size };
+        let Some(func) = self.vtable.get(&id) else {
+            panic!("Tried to vcall id 0x{id:x}");
+        };
+        func(self);
+        self.advance_counter();
+    }
+
+    #[inline(always)]
+    fn l4_ldbo(&mut self, insn: u32) {
+        let dst = reg(insn, 0);
+        self.registers[dst] = Value {
+            size: self.mem_base as _,
+        };
+        self.advance_counter();
+    }
+
+    #[inline(always)]
+    fn l4_ldpc(&mut self, insn: u32) {
+        let dst = reg(insn, 0);
+        self.registers[dst] = Value {
+            size: self.mem as _,
+        };
+        self.advance_counter();
     }
 
     #[inline(always)]
