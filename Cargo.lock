@@ -12,21 +12,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "anyhow"
-version = "1.0.69"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "224afbd727c3d6e4b90103ece64b8d1b67fbb1973b1046c2281eed3f3803f800"
-
-[[package]]
-name = "ariadne"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f1cb2a2046bea8ce5e875551f5772024882de0b540c7f93dfc5d6cf1ca8b030c"
-dependencies = [
- "yansi",
-]
-
-[[package]]
 name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -483,17 +468,37 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c0edd1e5b14653f783770bce4a4dabb4a5108a5370a5f5d8cfe8710c361f6c8b"
 
 [[package]]
-name = "urban-engine"
-version = "1.0.0-pre.0"
+name = "urban-cli"
+version = "1.0.0-pre"
 dependencies = [
- "anyhow",
- "ariadne",
- "byteorder",
  "chrono",
  "clap",
+ "urban-common",
+ "urban-lua",
+ "urban-runtime",
+]
+
+[[package]]
+name = "urban-common"
+version = "1.0.0-pre"
+dependencies = [
+ "byteorder",
+]
+
+[[package]]
+name = "urban-lua"
+version = "1.0.0-pre"
+dependencies = [
  "phf",
  "rslua",
  "thiserror",
+]
+
+[[package]]
+name = "urban-runtime"
+version = "1.0.0-pre"
+dependencies = [
+ "urban-common",
 ]
 
 [[package]]
@@ -652,9 +657,3 @@ name = "windows_x86_64_msvc"
 version = "0.42.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "447660ad36a13288b1db4d4248e857b510e8c3a225c822ba4fb748c0aafecffd"
-
-[[package]]
-name = "yansi"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09041cd90cf85f7f8b2df60c646f853b7f535ce68f85244eb6731cf89fa498ec"

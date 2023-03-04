@@ -1,21 +1,2 @@
-[package]
-name = "urban-engine"
-version = "1.0.0-pre.0"
-edition = "2021"
-
-[dependencies]
-clap = { version = "4.1", features = ["cargo"] }
-byteorder = "1.4"
-# May be not needed
-rslua = "0.2"
-phf = { version = "0.11", features = ["macros"] }
-ariadne = "0.1"
-anyhow = "1.0"
-thiserror = "1.0"
-
-[build-dependencies]
-chrono = "0.4"
-
-[[bin]]
-name = "urban"
-path = "src/main.rs"
+[workspace]
+members = ["crates/common", "crates/cli", "crates/runtime", "crates/lua"]

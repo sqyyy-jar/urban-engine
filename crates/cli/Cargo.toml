@@ -1,0 +1,17 @@
+[package]
+name = "urban-cli"
+version = "1.0.0-pre"
+edition = "2021"
+
+[dependencies]
+urban-common = { path = "../common" }
+urban-runtime = { path = "../runtime" }
+urban-lua = { path = "../lua" }
+clap = { version = "4.1", features = ["cargo"] }
+
+[build-dependencies]
+chrono = "0.4"
+
+[[bin]]
+name = "urban"
+path = "src/main.rs"
