@@ -99,7 +99,7 @@ impl Context for SafeContext {
         eprintln!("Runtime panicked:");
         for (i, reg) in self.registers.chunks(4).enumerate() {
             eprintln!(
-                " R{:<2}: 0x{:016X} | R{:<2}: 0x{:016X} | R{:<2}: 0x{:016X} | R{:<2}: 0x{:016X}",
+                " R{:<2}: 0x{:016x} | R{:<2}: 0x{:016x} | R{:<2}: 0x{:016x} | R{:<2}: 0x{:016x}",
                 i * 4,
                 unsafe { reg[0].uint },
                 i * 4 + 1,
@@ -114,7 +114,7 @@ impl Context for SafeContext {
             ERR_ILLEGAL_INSN => {
                 eprintln!();
                 eprintln!(
-                    "Illegal instruction at address {:?}: 0x{:08X}",
+                    "Illegal instruction at address {:?}: 0x{:08x}",
                     self.mem,
                     unsafe { *self.mem }
                 );
@@ -122,7 +122,7 @@ impl Context for SafeContext {
             ERR_ILLEGAL_MEMORY_ACCESS => {
                 eprintln!();
                 eprintln!(
-                    "Illegal memory access in instruction at  address {:?}: 0x{:08X}",
+                    "Illegal memory access in instruction at  address {:?}: 0x{:08x}",
                     self.mem,
                     unsafe { *self.mem }
                 );
