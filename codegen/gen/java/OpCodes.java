@@ -2,7 +2,7 @@
 // It is not intended for manual editing.
 
 /**
- * This class contains opcode constants for ISA version {@code 1.0.0-pre}.
+ * This class contains opcode constants for ISA version {@code 1.1.0-pre}.
  */
 public class OpCodes {
     /**
@@ -31,100 +31,85 @@ public class OpCodes {
     public static final int L0_REM = 0b00100_00000_00000_00000000000000000;
     public static final int END_L0_REM = 0b00100_11111_11111_11111111111111111;
     /**
-     * {@code adds Xdst Xlhs i17}
-     */
-    public static final int L0_ADDS = 0b00101_00000_00000_00000000000000000;
-    public static final int END_L0_ADDS = 0b00101_11111_11111_11111111111111111;
-    /**
-     * {@code subs Xdst Xlhs i17}
-     */
-    public static final int L0_SUBS = 0b00110_00000_00000_00000000000000000;
-    public static final int END_L0_SUBS = 0b00110_11111_11111_11111111111111111;
-    /**
-     * {@code muls Xdst Xlhs i17}
-     */
-    public static final int L0_MULS = 0b00111_00000_00000_00000000000000000;
-    public static final int END_L0_MULS = 0b00111_11111_11111_11111111111111111;
-    /**
      * {@code divs Xdst Xlhs i17}
      */
-    public static final int L0_DIVS = 0b01000_00000_00000_00000000000000000;
-    public static final int END_L0_DIVS = 0b01000_11111_11111_11111111111111111;
+    public static final int L0_DIVS = 0b00101_00000_00000_00000000000000000;
+    public static final int END_L0_DIVS = 0b00101_11111_11111_11111111111111111;
     /**
      * {@code rems Xdst Xlhs i17}
      */
-    public static final int L0_REMS = 0b01001_00000_00000_00000000000000000;
-    public static final int END_L0_REMS = 0b01001_11111_11111_11111111111111111;
+    public static final int L0_REMS = 0b00110_00000_00000_00000000000000000;
+    public static final int END_L0_REMS = 0b00110_11111_11111_11111111111111111;
     /**
      * {@code ldr Xdst i22}
      */
-    public static final int L0_LDR = 0b01010_00000_0000000000000000000000;
-    public static final int END_L0_LDR = 0b01010_11111_1111111111111111111111;
+    public static final int L0_LDR = 0b00111_00000_0000000000000000000000;
+    public static final int END_L0_LDR = 0b00111_11111_1111111111111111111111;
     /**
      * {@code str i22 Xsrc}
      */
-    public static final int L0_STR = 0b01011_0000000000000000000000_00000;
-    public static final int END_L0_STR = 0b01011_1111111111111111111111_11111;
+    public static final int L0_STR = 0b01000_0000000000000000000000_00000;
+    public static final int END_L0_STR = 0b01000_1111111111111111111111_11111;
     /**
      * {@code mov Xdst u22}
      */
-    public static final int L0_MOV = 0b01100_00000_0000000000000000000000;
-    public static final int END_L0_MOV = 0b01100_11111_1111111111111111111111;
+    public static final int L0_MOV = 0b01001_00000_0000000000000000000000;
+    public static final int END_L0_MOV = 0b01001_11111_1111111111111111111111;
     /**
      * {@code movs Xdst i22}
      */
-    public static final int L0_MOVS = 0b01101_00000_0000000000000000000000;
-    public static final int END_L0_MOVS = 0b01101_11111_1111111111111111111111;
+    public static final int L0_MOVS = 0b01010_00000_0000000000000000000000;
+    public static final int END_L0_MOVS = 0b01010_11111_1111111111111111111111;
     /**
      * {@code branch i27}
      */
-    public static final int L0_BRANCH = 0b01110_000000000000000000000000000;
-    public static final int END_L0_BRANCH = 0b01110_111111111111111111111111111;
+    public static final int L0_BRANCH = 0b01011_000000000000000000000000000;
+    public static final int END_L0_BRANCH = 0b01011_111111111111111111111111111;
     /**
      * {@code branch.l i27}
      */
-    public static final int L0_BRANCH_L = 0b01111_000000000000000000000000000;
-    public static final int END_L0_BRANCH_L = 0b01111_111111111111111111111111111;
+    public static final int L0_BRANCH_L = 0b01100_000000000000000000000000000;
+    public static final int END_L0_BRANCH_L = 0b01100_111111111111111111111111111;
     /**
      * {@code branch.ld i27}
      */
-    public static final int L0_BRANCH_LD = 0b10000_000000000000000000000000000;
-    public static final int END_L0_BRANCH_LD = 0b10000_111111111111111111111111111;
+    public static final int L0_BRANCH_LD = 0b01101_000000000000000000000000000;
+    public static final int END_L0_BRANCH_LD = 0b01101_111111111111111111111111111;
     /**
      * {@code branch.l.ld i27}
      */
-    public static final int L0_BRANCH_L_LD = 0b10001_000000000000000000000000000;
-    public static final int END_L0_BRANCH_L_LD = 0b10001_111111111111111111111111111;
+    public static final int L0_BRANCH_L_LD = 0b01110_000000000000000000000000000;
+    public static final int END_L0_BRANCH_L_LD = 0b01110_111111111111111111111111111;
     /**
      * {@code branch.eq i22 Xcond}
      */
-    public static final int L0_BRANCH_EQ = 0b10010_0000000000000000000000_00000;
-    public static final int END_L0_BRANCH_EQ = 0b10010_1111111111111111111111_11111;
+    public static final int L0_BRANCH_EQ = 0b01111_0000000000000000000000_00000;
+    public static final int END_L0_BRANCH_EQ = 0b01111_1111111111111111111111_11111;
     /**
      * {@code branch.ne i22 Xcond}
      */
-    public static final int L0_BRANCH_NE = 0b10011_0000000000000000000000_00000;
-    public static final int END_L0_BRANCH_NE = 0b10011_1111111111111111111111_11111;
+    public static final int L0_BRANCH_NE = 0b10000_0000000000000000000000_00000;
+    public static final int END_L0_BRANCH_NE = 0b10000_1111111111111111111111_11111;
     /**
      * {@code branch.lt i22 Xcond}
      */
-    public static final int L0_BRANCH_LT = 0b10100_0000000000000000000000_00000;
-    public static final int END_L0_BRANCH_LT = 0b10100_1111111111111111111111_11111;
+    public static final int L0_BRANCH_LT = 0b10001_0000000000000000000000_00000;
+    public static final int END_L0_BRANCH_LT = 0b10001_1111111111111111111111_11111;
     /**
      * {@code branch.gt i22 Xcond}
      */
-    public static final int L0_BRANCH_GT = 0b10101_0000000000000000000000_00000;
-    public static final int END_L0_BRANCH_GT = 0b10101_1111111111111111111111_11111;
+    public static final int L0_BRANCH_GT = 0b10010_0000000000000000000000_00000;
+    public static final int END_L0_BRANCH_GT = 0b10010_1111111111111111111111_11111;
     /**
      * {@code branch.le i22 Xcond}
      */
-    public static final int L0_BRANCH_LE = 0b10110_0000000000000000000000_00000;
-    public static final int END_L0_BRANCH_LE = 0b10110_1111111111111111111111_11111;
+    public static final int L0_BRANCH_LE = 0b10011_0000000000000000000000_00000;
+    public static final int END_L0_BRANCH_LE = 0b10011_1111111111111111111111_11111;
     /**
      * {@code branch.ge i22 Xcond}
      */
-    public static final int L0_BRANCH_GE = 0b10111_0000000000000000000000_00000;
-    public static final int END_L0_BRANCH_GE = 0b10111_1111111111111111111111_11111;
+    public static final int L0_BRANCH_GE = 0b10100_0000000000000000000000_00000;
+    public static final int END_L0_BRANCH_GE = 0b10100_1111111111111111111111_11111;
     /**
      * {@code shl Xdst Xlhs u11}
      */
@@ -221,100 +206,85 @@ public class OpCodes {
     public static final int L2_REM = 0b11111111111_000100_00000_00000_00000;
     public static final int END_L2_REM = 0b11111111111_000100_11111_11111_11111;
     /**
-     * {@code adds Xdst Xlhs Xrhs}
-     */
-    public static final int L2_ADDS = 0b11111111111_000101_00000_00000_00000;
-    public static final int END_L2_ADDS = 0b11111111111_000101_11111_11111_11111;
-    /**
-     * {@code subs Xdst Xlhs Xrhs}
-     */
-    public static final int L2_SUBS = 0b11111111111_000110_00000_00000_00000;
-    public static final int END_L2_SUBS = 0b11111111111_000110_11111_11111_11111;
-    /**
-     * {@code muls Xdst Xlhs Xrhs}
-     */
-    public static final int L2_MULS = 0b11111111111_000111_00000_00000_00000;
-    public static final int END_L2_MULS = 0b11111111111_000111_11111_11111_11111;
-    /**
      * {@code divs Xdst Xlhs Xrhs}
      */
-    public static final int L2_DIVS = 0b11111111111_001000_00000_00000_00000;
-    public static final int END_L2_DIVS = 0b11111111111_001000_11111_11111_11111;
+    public static final int L2_DIVS = 0b11111111111_000101_00000_00000_00000;
+    public static final int END_L2_DIVS = 0b11111111111_000101_11111_11111_11111;
     /**
      * {@code rems Xdst Xlhs Xrhs}
      */
-    public static final int L2_REMS = 0b11111111111_001001_00000_00000_00000;
-    public static final int END_L2_REMS = 0b11111111111_001001_11111_11111_11111;
+    public static final int L2_REMS = 0b11111111111_000110_00000_00000_00000;
+    public static final int END_L2_REMS = 0b11111111111_000110_11111_11111_11111;
     /**
      * {@code addf Xdst Xlhs Xrhs}
      */
-    public static final int L2_ADDF = 0b11111111111_001010_00000_00000_00000;
-    public static final int END_L2_ADDF = 0b11111111111_001010_11111_11111_11111;
+    public static final int L2_ADDF = 0b11111111111_000111_00000_00000_00000;
+    public static final int END_L2_ADDF = 0b11111111111_000111_11111_11111_11111;
     /**
      * {@code subf Xdst Xlhs Xrhs}
      */
-    public static final int L2_SUBF = 0b11111111111_001011_00000_00000_00000;
-    public static final int END_L2_SUBF = 0b11111111111_001011_11111_11111_11111;
+    public static final int L2_SUBF = 0b11111111111_001000_00000_00000_00000;
+    public static final int END_L2_SUBF = 0b11111111111_001000_11111_11111_11111;
     /**
      * {@code mulf Xdst Xlhs Xrhs}
      */
-    public static final int L2_MULF = 0b11111111111_001100_00000_00000_00000;
-    public static final int END_L2_MULF = 0b11111111111_001100_11111_11111_11111;
+    public static final int L2_MULF = 0b11111111111_001001_00000_00000_00000;
+    public static final int END_L2_MULF = 0b11111111111_001001_11111_11111_11111;
     /**
      * {@code divf Xdst Xlhs Xrhs}
      */
-    public static final int L2_DIVF = 0b11111111111_001101_00000_00000_00000;
-    public static final int END_L2_DIVF = 0b11111111111_001101_11111_11111_11111;
+    public static final int L2_DIVF = 0b11111111111_001010_00000_00000_00000;
+    public static final int END_L2_DIVF = 0b11111111111_001010_11111_11111_11111;
     /**
      * {@code remf Xdst Xlhs Xrhs}
      */
-    public static final int L2_REMF = 0b11111111111_001110_00000_00000_00000;
-    public static final int END_L2_REMF = 0b11111111111_001110_11111_11111_11111;
+    public static final int L2_REMF = 0b11111111111_001011_00000_00000_00000;
+    public static final int END_L2_REMF = 0b11111111111_001011_11111_11111_11111;
     /**
      * {@code and Xdst Xlhs Xrhs}
      */
-    public static final int L2_AND = 0b11111111111_001111_00000_00000_00000;
-    public static final int END_L2_AND = 0b11111111111_001111_11111_11111_11111;
+    public static final int L2_AND = 0b11111111111_001100_00000_00000_00000;
+    public static final int END_L2_AND = 0b11111111111_001100_11111_11111_11111;
     /**
      * {@code or Xdst Xlhs Xrhs}
      */
-    public static final int L2_OR = 0b11111111111_010000_00000_00000_00000;
-    public static final int END_L2_OR = 0b11111111111_010000_11111_11111_11111;
+    public static final int L2_OR = 0b11111111111_001101_00000_00000_00000;
+    public static final int END_L2_OR = 0b11111111111_001101_11111_11111_11111;
     /**
      * {@code xor Xdst Xlhs Xrhs}
      */
-    public static final int L2_XOR = 0b11111111111_010001_00000_00000_00000;
-    public static final int END_L2_XOR = 0b11111111111_010001_11111_11111_11111;
+    public static final int L2_XOR = 0b11111111111_001110_00000_00000_00000;
+    public static final int END_L2_XOR = 0b11111111111_001110_11111_11111_11111;
     /**
      * {@code shl Xdst Xlhs Xrhs}
      */
-    public static final int L2_SHL = 0b11111111111_010010_00000_00000_00000;
-    public static final int END_L2_SHL = 0b11111111111_010010_11111_11111_11111;
+    public static final int L2_SHL = 0b11111111111_001111_00000_00000_00000;
+    public static final int END_L2_SHL = 0b11111111111_001111_11111_11111_11111;
     /**
      * {@code shr Xdst Xlhs Xrhs}
      */
-    public static final int L2_SHR = 0b11111111111_010011_00000_00000_00000;
-    public static final int END_L2_SHR = 0b11111111111_010011_11111_11111_11111;
+    public static final int L2_SHR = 0b11111111111_010000_00000_00000_00000;
+    public static final int END_L2_SHR = 0b11111111111_010000_11111_11111_11111;
     /**
      * {@code shrs Xdst Xlhs Xrhs}
      */
-    public static final int L2_SHRS = 0b11111111111_010100_00000_00000_00000;
-    public static final int END_L2_SHRS = 0b11111111111_010100_11111_11111_11111;
+    public static final int L2_SHRS = 0b11111111111_010001_00000_00000_00000;
+    public static final int END_L2_SHRS = 0b11111111111_010001_11111_11111_11111;
     /**
      * {@code cmp Xdst Xlhs Xrhs}
      */
-    public static final int L2_CMP = 0b11111111111_010101_00000_00000_00000;
-    public static final int END_L2_CMP = 0b11111111111_010101_11111_11111_11111;
+    public static final int L2_CMP = 0b11111111111_010010_00000_00000_00000;
+    public static final int END_L2_CMP = 0b11111111111_010010_11111_11111_11111;
     /**
      * {@code cmps Xdst Xlhs Xrhs}
      */
-    public static final int L2_CMPS = 0b11111111111_010110_00000_00000_00000;
-    public static final int END_L2_CMPS = 0b11111111111_010110_11111_11111_11111;
+    public static final int L2_CMPS = 0b11111111111_010011_00000_00000_00000;
+    public static final int END_L2_CMPS = 0b11111111111_010011_11111_11111_11111;
     /**
      * {@code cmpf Xdst Xlhs Xrhs}
      */
-    public static final int L2_CMPF = 0b11111111111_010111_00000_00000_00000;
-    public static final int END_L2_CMPF = 0b11111111111_010111_11111_11111_11111;
+    public static final int L2_CMPF = 0b11111111111_010100_00000_00000_00000;
+    public static final int END_L2_CMPF = 0b11111111111_010100_11111_11111_11111;
     /**
      * {@code not Xdst Xsrc}
      */
