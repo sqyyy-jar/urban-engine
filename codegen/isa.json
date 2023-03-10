@@ -45,30 +45,6 @@
           ]
         },
         {
-          "name": "adds",
-          "components": [
-            "r:dst",
-            "r:lhs",
-            "i:rhs:17"
-          ]
-        },
-        {
-          "name": "subs",
-          "components": [
-            "r:dst",
-            "r:lhs",
-            "i:rhs:17"
-          ]
-        },
-        {
-          "name": "muls",
-          "components": [
-            "r:dst",
-            "r:lhs",
-            "i:rhs:17"
-          ]
-        },
-        {
           "name": "divs",
           "components": [
             "r:dst",
@@ -344,30 +320,6 @@
         },
         {
           "name": "rem",
-          "components": [
-            "r:dst",
-            "r:lhs",
-            "r:rhs"
-          ]
-        },
-        {
-          "name": "adds",
-          "components": [
-            "r:dst",
-            "r:lhs",
-            "r:rhs"
-          ]
-        },
-        {
-          "name": "subs",
-          "components": [
-            "r:dst",
-            "r:lhs",
-            "r:rhs"
-          ]
-        },
-        {
-          "name": "muls",
           "components": [
             "r:dst",
             "r:lhs",
