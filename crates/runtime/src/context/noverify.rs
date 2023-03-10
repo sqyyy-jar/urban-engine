@@ -161,39 +161,6 @@ impl InstructionBus for UnsafeContext {
     }
 
     #[inline(always)]
-    fn l0_adds(&mut self, insn: u32) {
-        let dst = reg(insn, 0);
-        let lhs = reg(insn, 5);
-        let rhs = signed_immediate::<17>(insn, 10);
-        self.registers[dst] = Value {
-            int: unsafe { self.registers[lhs].int + rhs },
-        };
-        self.advance_counter();
-    }
-
-    #[inline(always)]
-    fn l0_subs(&mut self, insn: u32) {
-        let dst = reg(insn, 0);
-        let lhs = reg(insn, 5);
-        let rhs = signed_immediate::<17>(insn, 10);
-        self.registers[dst] = Value {
-            int: unsafe { self.registers[lhs].int - rhs },
-        };
-        self.advance_counter();
-    }
-
-    #[inline(always)]
-    fn l0_muls(&mut self, insn: u32) {
-        let dst = reg(insn, 0);
-        let lhs = reg(insn, 5);
-        let rhs = signed_immediate::<17>(insn, 10);
-        self.registers[dst] = Value {
-            int: unsafe { self.registers[lhs].int * rhs },
-        };
-        self.advance_counter();
-    }
-
-    #[inline(always)]
     fn l0_divs(&mut self, insn: u32) {
         let dst = reg(insn, 0);
         let lhs = reg(insn, 5);
@@ -597,39 +564,6 @@ impl InstructionBus for UnsafeContext {
         let rhs = reg(insn, 10);
         self.registers[dst] = Value {
             uint: unsafe { self.registers[lhs].uint % self.registers[rhs].uint },
-        };
-        self.advance_counter();
-    }
-
-    #[inline(always)]
-    fn l2_adds(&mut self, insn: u32) {
-        let dst = reg(insn, 0);
-        let lhs = reg(insn, 5);
-        let rhs = reg(insn, 10);
-        self.registers[dst] = Value {
-            int: unsafe { self.registers[lhs].int + self.registers[rhs].int },
-        };
-        self.advance_counter();
-    }
-
-    #[inline(always)]
-    fn l2_subs(&mut self, insn: u32) {
-        let dst = reg(insn, 0);
-        let lhs = reg(insn, 5);
-        let rhs = reg(insn, 10);
-        self.registers[dst] = Value {
-            int: unsafe { self.registers[lhs].int - self.registers[rhs].int },
-        };
-        self.advance_counter();
-    }
-
-    #[inline(always)]
-    fn l2_muls(&mut self, insn: u32) {
-        let dst = reg(insn, 0);
-        let lhs = reg(insn, 5);
-        let rhs = reg(insn, 10);
-        self.registers[dst] = Value {
-            int: unsafe { self.registers[lhs].int * self.registers[rhs].int },
         };
         self.advance_counter();
     }
