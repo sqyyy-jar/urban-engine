@@ -28,7 +28,7 @@ mod noverify {
 
     pub fn uint_to_string(ctx: &mut UnsafeContext) {
         let value = unsafe { ctx.registers[0].uint };
-        let dst = unsafe { (ctx.mem_base as usize + ctx.registers[1].size) as *mut u8 };
+        let dst = unsafe { ctx.registers[1].size as *mut u8 };
         let max_len = unsafe { ctx.registers[2].size };
         let string = value.to_string();
         if max_len == 0 {
@@ -42,7 +42,7 @@ mod noverify {
 
     pub fn int_to_string(ctx: &mut UnsafeContext) {
         let value = unsafe { ctx.registers[0].int };
-        let dst = unsafe { (ctx.mem_base as usize + ctx.registers[1].size) as *mut u8 };
+        let dst = unsafe { ctx.registers[1].size as *mut u8 };
         let max_len = unsafe { ctx.registers[2].size };
         let string = value.to_string();
         if max_len == 0 {
@@ -56,7 +56,7 @@ mod noverify {
 
     pub fn float_to_string(ctx: &mut UnsafeContext) {
         let value = unsafe { ctx.registers[0].float };
-        let dst = unsafe { (ctx.mem_base as usize + ctx.registers[1].size) as *mut u8 };
+        let dst = unsafe { ctx.registers[1].size as *mut u8 };
         let max_len = unsafe { ctx.registers[2].size };
         let string = value.to_string();
         if max_len == 0 {
@@ -74,7 +74,7 @@ mod safe {
 
     pub fn uint_to_string(ctx: &mut SafeContext) {
         let value = unsafe { ctx.registers[0].uint };
-        let dst = unsafe { (ctx.mem_base as usize + ctx.registers[1].size) as *mut u8 };
+        let dst = unsafe { ctx.registers[1].size as *mut u8 };
         ctx.check_memory_access(dst as _);
         let max_len = unsafe { ctx.registers[2].size };
         ctx.check_memory_access(unsafe { dst.add(max_len) } as _);
@@ -90,7 +90,7 @@ mod safe {
 
     pub fn int_to_string(ctx: &mut SafeContext) {
         let value = unsafe { ctx.registers[0].int };
-        let dst = unsafe { (ctx.mem_base as usize + ctx.registers[1].size) as *mut u8 };
+        let dst = unsafe { ctx.registers[1].size as *mut u8 };
         ctx.check_memory_access(dst as _);
         let max_len = unsafe { ctx.registers[2].size };
         ctx.check_memory_access(unsafe { dst.add(max_len) } as _);
@@ -106,7 +106,7 @@ mod safe {
 
     pub fn float_to_string(ctx: &mut SafeContext) {
         let value = unsafe { ctx.registers[0].float };
-        let dst = unsafe { (ctx.mem_base as usize + ctx.registers[1].size) as *mut u8 };
+        let dst = unsafe { ctx.registers[1].size as *mut u8 };
         ctx.check_memory_access(dst as _);
         let max_len = unsafe { ctx.registers[2].size };
         ctx.check_memory_access(unsafe { dst.add(max_len) } as _);
