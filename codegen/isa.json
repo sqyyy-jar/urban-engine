@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0-pre",
+  "version": "1.2.0-pre",
   "layers": [
     {
       "bits": 5,
@@ -78,6 +78,7 @@
         },
         {
           "name": "mov",
+          "longname": "move absolute value",
           "components": [
             "r:dst",
             "u:value:22"
@@ -85,6 +86,7 @@
         },
         {
           "name": "movs",
+          "longname": "move absolute value with sign extension",
           "components": [
             "r:dst",
             "i:value:22"
@@ -119,6 +121,7 @@
         },
         {
           "name": "branch.eq",
+          "longname": "branch if equal",
           "components": [
             "i:dst:22",
             "r:cond"
@@ -126,6 +129,7 @@
         },
         {
           "name": "branch.ne",
+          "longname": "branch if not equal",
           "components": [
             "i:dst:22",
             "r:cond"
@@ -133,6 +137,7 @@
         },
         {
           "name": "branch.lt",
+          "longname": "branch if less than",
           "components": [
             "i:dst:22",
             "r:cond"
@@ -140,6 +145,7 @@
         },
         {
           "name": "branch.gt",
+          "longname": "branch if greater than",
           "components": [
             "i:dst:22",
             "r:cond"
@@ -147,6 +153,7 @@
         },
         {
           "name": "branch.le",
+          "longname": "branch if less or equal",
           "components": [
             "i:dst:22",
             "r:cond"
@@ -154,9 +161,26 @@
         },
         {
           "name": "branch.ge",
+          "longname": "branch if greater or equal",
           "components": [
             "i:dst:22",
             "r:cond"
+          ]
+        },
+        {
+          "name": "branch.zr",
+          "longname": "branch if zero",
+          "components": [
+            "i:dst:22",
+            "r:src"
+          ]
+        },
+        {
+          "name": "branch.nz",
+          "longname": "branch if non-zero",
+          "components": [
+            "i:dst:22",
+            "r:src"
           ]
         }
       ]
@@ -166,6 +190,7 @@
       "instructions": [
         {
           "name": "shl",
+          "longname": "bit-shift left",
           "components": [
             "r:dst",
             "r:lhs",
@@ -174,6 +199,7 @@
         },
         {
           "name": "shr",
+          "longname": "bit-shift right",
           "components": [
             "r:dst",
             "r:lhs",
@@ -182,6 +208,7 @@
         },
         {
           "name": "shrs",
+          "longname": "signed bit-shift right",
           "components": [
             "r:dst",
             "r:lhs",
@@ -408,6 +435,7 @@
         },
         {
           "name": "shl",
+          "longname": "bit-shift left",
           "components": [
             "r:dst",
             "r:lhs",
@@ -416,6 +444,7 @@
         },
         {
           "name": "shr",
+          "longname": "bit-shift right",
           "components": [
             "r:dst",
             "r:lhs",
@@ -424,6 +453,7 @@
         },
         {
           "name": "shrs",
+          "longname": "signed bit-shift right",
           "components": [
             "r:dst",
             "r:lhs",
@@ -432,6 +462,7 @@
         },
         {
           "name": "cmp",
+          "longname": "compare unsigned integer",
           "components": [
             "r:dst",
             "r:lhs",
@@ -440,6 +471,7 @@
         },
         {
           "name": "cmps",
+          "longname": "compare signed integer",
           "components": [
             "r:dst",
             "r:lhs",
@@ -448,6 +480,7 @@
         },
         {
           "name": "cmpf",
+          "longname": "compare float",
           "components": [
             "r:dst",
             "r:lhs",

@@ -346,6 +346,28 @@ impl InstructionBus for SafeContext {
     }
 
     #[inline(always)]
+    fn l0_branch_zr(&mut self, insn: u32) {
+        let dst = signed_immediate::<22>(insn, 0);
+        let cond = reg(insn, 22);
+        if unsafe { self.registers[cond].uint } == 0 {
+            self.set_counter(unsafe { self.mem.offset(dst as _) });
+        } else {
+            self.advance_counter();
+        }
+    }
+
+    #[inline(always)]
+    fn l0_branch_nz(&mut self, insn: u32) {
+        let dst = signed_immediate::<22>(insn, 0);
+        let cond = reg(insn, 22);
+        if unsafe { self.registers[cond].uint } != 0 {
+            self.set_counter(unsafe { self.mem.offset(dst as _) });
+        } else {
+            self.advance_counter();
+        }
+    }
+
+    #[inline(always)]
     fn l1_shl(&mut self, insn: u32) {
         let dst = reg(insn, 0);
         let lhs = reg(insn, 5);
