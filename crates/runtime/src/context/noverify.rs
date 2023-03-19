@@ -1,4 +1,5 @@
 use std::{
+    alloc,
     collections::HashMap,
     io::{Read, Write},
     process::exit,
@@ -8,7 +9,7 @@ use std::{
 use urban_common::{
     bus::InstructionBus,
     err::{ERR_ILLEGAL_INSN, ERR_ILLEGAL_MEMORY_ACCESS},
-    int::{INT_READ, INT_WRITE},
+    int::{INT_ALLOC, INT_DEALLOC, INT_READ, INT_WRITE},
 };
 
 use crate::vmod::VMod;
@@ -483,16 +484,16 @@ impl InstructionBus for UnsafeContext {
             INT_WRITE => {
                 let fd = unsafe { self.registers[0].uint };
                 let buf = unsafe { self.registers[1].size as *const u8 };
-                let count = unsafe { self.registers[2].uint };
+                let count = unsafe { self.registers[2].size };
                 let res = match fd {
                     1 => self
                         .terminal
                         .stdout
-                        .write(unsafe { slice::from_raw_parts(buf, count as _) }),
+                        .write(unsafe { slice::from_raw_parts(buf, count) }),
                     2 => self
                         .terminal
                         .stderr
-                        .write(unsafe { slice::from_raw_parts(buf, count as _) }),
+                        .write(unsafe { slice::from_raw_parts(buf, count) }),
                     _ => {
                         self.registers[0] = Value { int: -1 };
                         self.advance_counter();
@@ -508,6 +509,27 @@ impl InstructionBus for UnsafeContext {
                     }
                 }
                 self.advance_counter();
+            }
+            INT_ALLOC => {
+                let size = unsafe { self.registers[0].size };
+                let layout = alloc::Layout::from_size_align(size, 4096);
+                if let Ok(layout) = layout {
+                    let addr = unsafe { alloc::alloc(layout) };
+                    self.registers[0] = Value { size: addr as _ };
+                } else {
+                    self.registers[0] = Value { isize: -1 };
+                }
+            }
+            INT_DEALLOC => {
+                let addr = unsafe { self.registers[0].size };
+                let size = unsafe { self.registers[1].size };
+                let layout = alloc::Layout::from_size_align(size, 4096);
+                if let Ok(layout) = layout {
+                    unsafe { alloc::dealloc(addr as _, layout) };
+                    self.registers[0] = Value { size: 0 };
+                } else {
+                    self.registers[0] = Value { isize: -1 };
+                }
             }
             _ => {
                 self.advance_counter();
