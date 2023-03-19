@@ -519,6 +519,7 @@ impl InstructionBus for UnsafeContext {
                 } else {
                     self.registers[0] = Value { isize: -1 };
                 }
+                self.advance_counter();
             }
             INT_DEALLOC => {
                 let addr = unsafe { self.registers[0].size };
@@ -530,6 +531,7 @@ impl InstructionBus for UnsafeContext {
                 } else {
                     self.registers[0] = Value { isize: -1 };
                 }
+                self.advance_counter();
             }
             _ => {
                 self.advance_counter();
