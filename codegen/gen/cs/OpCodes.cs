@@ -5,38 +5,38 @@
 public class OpCodes
 {
     /// <c>add Xdst Xlhs u17</c>
-    public static readonly uint L0Add = 0b00000_00000_00000_00000000000000000;
-    public static readonly uint EndL0Add = 0b00000_11111_11111_11111111111111111;
+    public static readonly uint L0Add = 0b00000_00000000000000000_00000_00000;
+    public static readonly uint EndL0Add = 0b00000_11111111111111111_11111_11111;
     /// <c>sub Xdst Xlhs u17</c>
-    public static readonly uint L0Sub = 0b00001_00000_00000_00000000000000000;
-    public static readonly uint EndL0Sub = 0b00001_11111_11111_11111111111111111;
+    public static readonly uint L0Sub = 0b00001_00000000000000000_00000_00000;
+    public static readonly uint EndL0Sub = 0b00001_11111111111111111_11111_11111;
     /// <c>mul Xdst Xlhs u17</c>
-    public static readonly uint L0Mul = 0b00010_00000_00000_00000000000000000;
-    public static readonly uint EndL0Mul = 0b00010_11111_11111_11111111111111111;
+    public static readonly uint L0Mul = 0b00010_00000000000000000_00000_00000;
+    public static readonly uint EndL0Mul = 0b00010_11111111111111111_11111_11111;
     /// <c>div Xdst Xlhs u17</c>
-    public static readonly uint L0Div = 0b00011_00000_00000_00000000000000000;
-    public static readonly uint EndL0Div = 0b00011_11111_11111_11111111111111111;
+    public static readonly uint L0Div = 0b00011_00000000000000000_00000_00000;
+    public static readonly uint EndL0Div = 0b00011_11111111111111111_11111_11111;
     /// <c>rem Xdst Xlhs u17</c>
-    public static readonly uint L0Rem = 0b00100_00000_00000_00000000000000000;
-    public static readonly uint EndL0Rem = 0b00100_11111_11111_11111111111111111;
+    public static readonly uint L0Rem = 0b00100_00000000000000000_00000_00000;
+    public static readonly uint EndL0Rem = 0b00100_11111111111111111_11111_11111;
     /// <c>divs Xdst Xlhs i17</c>
-    public static readonly uint L0Divs = 0b00101_00000_00000_00000000000000000;
-    public static readonly uint EndL0Divs = 0b00101_11111_11111_11111111111111111;
+    public static readonly uint L0Divs = 0b00101_00000000000000000_00000_00000;
+    public static readonly uint EndL0Divs = 0b00101_11111111111111111_11111_11111;
     /// <c>rems Xdst Xlhs i17</c>
-    public static readonly uint L0Rems = 0b00110_00000_00000_00000000000000000;
-    public static readonly uint EndL0Rems = 0b00110_11111_11111_11111111111111111;
+    public static readonly uint L0Rems = 0b00110_00000000000000000_00000_00000;
+    public static readonly uint EndL0Rems = 0b00110_11111111111111111_11111_11111;
     /// <c>ldr Xdst i22</c>
-    public static readonly uint L0Ldr = 0b00111_00000_0000000000000000000000;
-    public static readonly uint EndL0Ldr = 0b00111_11111_1111111111111111111111;
+    public static readonly uint L0Ldr = 0b00111_0000000000000000000000_00000;
+    public static readonly uint EndL0Ldr = 0b00111_1111111111111111111111_11111;
     /// <c>str i22 Xsrc</c>
-    public static readonly uint L0Str = 0b01000_0000000000000000000000_00000;
-    public static readonly uint EndL0Str = 0b01000_1111111111111111111111_11111;
+    public static readonly uint L0Str = 0b01000_00000_0000000000000000000000;
+    public static readonly uint EndL0Str = 0b01000_11111_1111111111111111111111;
     /// <c>mov Xdst u22</c>
-    public static readonly uint L0Mov = 0b01001_00000_0000000000000000000000;
-    public static readonly uint EndL0Mov = 0b01001_11111_1111111111111111111111;
+    public static readonly uint L0Mov = 0b01001_0000000000000000000000_00000;
+    public static readonly uint EndL0Mov = 0b01001_1111111111111111111111_11111;
     /// <c>movs Xdst i22</c>
-    public static readonly uint L0Movs = 0b01010_00000_0000000000000000000000;
-    public static readonly uint EndL0Movs = 0b01010_11111_1111111111111111111111;
+    public static readonly uint L0Movs = 0b01010_0000000000000000000000_00000;
+    public static readonly uint EndL0Movs = 0b01010_1111111111111111111111_11111;
     /// <c>branch i27</c>
     public static readonly uint L0Branch = 0b01011_000000000000000000000000000;
     public static readonly uint EndL0Branch = 0b01011_111111111111111111111111111;
@@ -50,62 +50,62 @@ public class OpCodes
     public static readonly uint L0BranchLLd = 0b01110_000000000000000000000000000;
     public static readonly uint EndL0BranchLLd = 0b01110_111111111111111111111111111;
     /// <c>branch.eq i22 Xcond</c>
-    public static readonly uint L0BranchEq = 0b01111_0000000000000000000000_00000;
-    public static readonly uint EndL0BranchEq = 0b01111_1111111111111111111111_11111;
+    public static readonly uint L0BranchEq = 0b01111_00000_0000000000000000000000;
+    public static readonly uint EndL0BranchEq = 0b01111_11111_1111111111111111111111;
     /// <c>branch.ne i22 Xcond</c>
-    public static readonly uint L0BranchNe = 0b10000_0000000000000000000000_00000;
-    public static readonly uint EndL0BranchNe = 0b10000_1111111111111111111111_11111;
+    public static readonly uint L0BranchNe = 0b10000_00000_0000000000000000000000;
+    public static readonly uint EndL0BranchNe = 0b10000_11111_1111111111111111111111;
     /// <c>branch.lt i22 Xcond</c>
-    public static readonly uint L0BranchLt = 0b10001_0000000000000000000000_00000;
-    public static readonly uint EndL0BranchLt = 0b10001_1111111111111111111111_11111;
+    public static readonly uint L0BranchLt = 0b10001_00000_0000000000000000000000;
+    public static readonly uint EndL0BranchLt = 0b10001_11111_1111111111111111111111;
     /// <c>branch.gt i22 Xcond</c>
-    public static readonly uint L0BranchGt = 0b10010_0000000000000000000000_00000;
-    public static readonly uint EndL0BranchGt = 0b10010_1111111111111111111111_11111;
+    public static readonly uint L0BranchGt = 0b10010_00000_0000000000000000000000;
+    public static readonly uint EndL0BranchGt = 0b10010_11111_1111111111111111111111;
     /// <c>branch.le i22 Xcond</c>
-    public static readonly uint L0BranchLe = 0b10011_0000000000000000000000_00000;
-    public static readonly uint EndL0BranchLe = 0b10011_1111111111111111111111_11111;
+    public static readonly uint L0BranchLe = 0b10011_00000_0000000000000000000000;
+    public static readonly uint EndL0BranchLe = 0b10011_11111_1111111111111111111111;
     /// <c>branch.ge i22 Xcond</c>
-    public static readonly uint L0BranchGe = 0b10100_0000000000000000000000_00000;
-    public static readonly uint EndL0BranchGe = 0b10100_1111111111111111111111_11111;
+    public static readonly uint L0BranchGe = 0b10100_00000_0000000000000000000000;
+    public static readonly uint EndL0BranchGe = 0b10100_11111_1111111111111111111111;
     /// <c>branch.zr i22 Xsrc</c>
-    public static readonly uint L0BranchZr = 0b10101_0000000000000000000000_00000;
-    public static readonly uint EndL0BranchZr = 0b10101_1111111111111111111111_11111;
+    public static readonly uint L0BranchZr = 0b10101_00000_0000000000000000000000;
+    public static readonly uint EndL0BranchZr = 0b10101_11111_1111111111111111111111;
     /// <c>branch.nz i22 Xsrc</c>
-    public static readonly uint L0BranchNz = 0b10110_0000000000000000000000_00000;
-    public static readonly uint EndL0BranchNz = 0b10110_1111111111111111111111_11111;
+    public static readonly uint L0BranchNz = 0b10110_00000_0000000000000000000000;
+    public static readonly uint EndL0BranchNz = 0b10110_11111_1111111111111111111111;
     /// <c>shl Xdst Xlhs u11</c>
-    public static readonly uint L1Shl = 0b11111_000000_00000_00000_00000000000;
-    public static readonly uint EndL1Shl = 0b11111_000000_11111_11111_11111111111;
+    public static readonly uint L1Shl = 0b11111_000000_00000000000_00000_00000;
+    public static readonly uint EndL1Shl = 0b11111_000000_11111111111_11111_11111;
     /// <c>shr Xdst Xlhs u11</c>
-    public static readonly uint L1Shr = 0b11111_000001_00000_00000_00000000000;
-    public static readonly uint EndL1Shr = 0b11111_000001_11111_11111_11111111111;
+    public static readonly uint L1Shr = 0b11111_000001_00000000000_00000_00000;
+    public static readonly uint EndL1Shr = 0b11111_000001_11111111111_11111_11111;
     /// <c>shrs Xdst Xlhs u11</c>
-    public static readonly uint L1Shrs = 0b11111_000010_00000_00000_00000000000;
-    public static readonly uint EndL1Shrs = 0b11111_000010_11111_11111_11111111111;
+    public static readonly uint L1Shrs = 0b11111_000010_00000000000_00000_00000;
+    public static readonly uint EndL1Shrs = 0b11111_000010_11111111111_11111_11111;
     /// <c>ldr Xdst Xsrc i11</c>
-    public static readonly uint L1Ldr = 0b11111_000011_00000_00000_00000000000;
-    public static readonly uint EndL1Ldr = 0b11111_000011_11111_11111_11111111111;
+    public static readonly uint L1Ldr = 0b11111_000011_00000000000_00000_00000;
+    public static readonly uint EndL1Ldr = 0b11111_000011_11111111111_11111_11111;
     /// <c>ldrb Xdst Xsrc i11</c>
-    public static readonly uint L1Ldrb = 0b11111_000100_00000_00000_00000000000;
-    public static readonly uint EndL1Ldrb = 0b11111_000100_11111_11111_11111111111;
+    public static readonly uint L1Ldrb = 0b11111_000100_00000000000_00000_00000;
+    public static readonly uint EndL1Ldrb = 0b11111_000100_11111111111_11111_11111;
     /// <c>ldrh Xdst Xsrc i11</c>
-    public static readonly uint L1Ldrh = 0b11111_000101_00000_00000_00000000000;
-    public static readonly uint EndL1Ldrh = 0b11111_000101_11111_11111_11111111111;
+    public static readonly uint L1Ldrh = 0b11111_000101_00000000000_00000_00000;
+    public static readonly uint EndL1Ldrh = 0b11111_000101_11111111111_11111_11111;
     /// <c>ldrw Xdst Xsrc i11</c>
-    public static readonly uint L1Ldrw = 0b11111_000110_00000_00000_00000000000;
-    public static readonly uint EndL1Ldrw = 0b11111_000110_11111_11111_11111111111;
+    public static readonly uint L1Ldrw = 0b11111_000110_00000000000_00000_00000;
+    public static readonly uint EndL1Ldrw = 0b11111_000110_11111111111_11111_11111;
     /// <c>str Xdst Xsrc i11</c>
-    public static readonly uint L1Str = 0b11111_000111_00000_00000_00000000000;
-    public static readonly uint EndL1Str = 0b11111_000111_11111_11111_11111111111;
+    public static readonly uint L1Str = 0b11111_000111_00000000000_00000_00000;
+    public static readonly uint EndL1Str = 0b11111_000111_11111111111_11111_11111;
     /// <c>strb Xdst Xsrc i11</c>
-    public static readonly uint L1Strb = 0b11111_001000_00000_00000_00000000000;
-    public static readonly uint EndL1Strb = 0b11111_001000_11111_11111_11111111111;
+    public static readonly uint L1Strb = 0b11111_001000_00000000000_00000_00000;
+    public static readonly uint EndL1Strb = 0b11111_001000_11111111111_11111_11111;
     /// <c>strh Xdst Xsrc i11</c>
-    public static readonly uint L1Strh = 0b11111_001001_00000_00000_00000000000;
-    public static readonly uint EndL1Strh = 0b11111_001001_11111_11111_11111111111;
+    public static readonly uint L1Strh = 0b11111_001001_00000000000_00000_00000;
+    public static readonly uint EndL1Strh = 0b11111_001001_11111111111_11111_11111;
     /// <c>strw Xdst Xsrc i11</c>
-    public static readonly uint L1Strw = 0b11111_001010_00000_00000_00000000000;
-    public static readonly uint EndL1Strw = 0b11111_001010_11111_11111_11111111111;
+    public static readonly uint L1Strw = 0b11111_001010_00000000000_00000_00000;
+    public static readonly uint EndL1Strw = 0b11111_001010_11111111111_11111_11111;
     /// <c>int u16</c>
     public static readonly uint L1Int = 0b11111_001011_00000_0000000000000000;
     public static readonly uint EndL1Int = 0b11111_001011_00000_1111111111111111;

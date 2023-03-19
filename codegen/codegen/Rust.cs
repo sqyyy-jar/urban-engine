@@ -58,7 +58,7 @@ public class Rust : Codegen
 
                 var start = startBuilder.ToString();
                 opcodes.Write(start);
-                foreach (var component in instruction.Components)
+                foreach (var component in instruction.Components.Reverse<IInstructionComponent>())
                 {
                     opcodes.Write('_');
                     opcodes.Write(string.Concat(Enumerable.Repeat('0', (int)component.Bits)));
@@ -67,7 +67,7 @@ public class Rust : Codegen
                 opcodes.WriteLine(";");
                 opcodes.Write($"pub const END_L{layerId}_{name}: u32 = 0b");
                 opcodes.Write(start);
-                foreach (var component in instruction.Components)
+                foreach (var component in instruction.Components.Reverse<IInstructionComponent>())
                 {
                     opcodes.Write('_');
                     opcodes.Write(string.Concat(Enumerable.Repeat('1', (int)component.Bits)));

@@ -59,7 +59,7 @@ public class Java : Codegen
 
                 var start = startBuilder.ToString();
                 opcodes.Write(start);
-                foreach (var component in instruction.Components)
+                foreach (var component in instruction.Components.Reverse<IInstructionComponent>())
                 {
                     opcodes.Write('_');
                     opcodes.Write(string.Concat(Enumerable.Repeat('0', (int)component.Bits)));
@@ -68,7 +68,7 @@ public class Java : Codegen
                 opcodes.WriteLine(";");
                 opcodes.Write($"    public static final int END_L{layerId}_{name} = 0b");
                 opcodes.Write(start);
-                foreach (var component in instruction.Components)
+                foreach (var component in instruction.Components.Reverse<IInstructionComponent>())
                 {
                     opcodes.Write('_');
                     opcodes.Write(string.Concat(Enumerable.Repeat('1', (int)component.Bits)));
