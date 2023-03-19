@@ -4,26 +4,62 @@ use std::{
 };
 
 use clap::{arg, command, crate_version, error::ErrorKind, value_parser, ArgAction, Command};
-use urban_common::{binary::Header, opcodes};
+use urban_common::{binary::Header, err::ERR_ILLEGAL_MEMORY_ACCESS, opcodes};
 use urban_lua::parse;
 use urban_runtime::{
-    context::{noverify::UnsafeContext, safe::SafeContext, Context},
+    context::{noverify::UnsafeContext, Context},
     vmods::util::Util,
 };
 
 const BUILD_DATE: &str = env!("BUILD_DATE");
+static mut CONTEXT: Option<UnsafeContext> = None;
+
+#[cfg(unix)]
+fn setup_handlers() {
+    use libc::{signal, size_t, SIGSEGV};
+    use std::ffi::c_int;
+    unsafe {
+        signal(SIGSEGV, handle as *const fn(c_int) as size_t);
+    }
+    unsafe extern "C" fn handle(_signum: c_int) {
+        unsafe {
+            CONTEXT.as_mut().unwrap().panic(ERR_ILLEGAL_MEMORY_ACCESS);
+        }
+    }
+}
+
+#[cfg(windows)]
+fn setup_handlers() {
+    use windows::Win32::{
+        Foundation::EXCEPTION_ACCESS_VIOLATION,
+        System::{
+            Diagnostics::Debug::{AddVectoredExceptionHandler, EXCEPTION_POINTERS},
+            Kernel::ExceptionContinueSearch,
+        },
+    };
+    unsafe {
+        AddVectoredExceptionHandler(1, Some(handle));
+    }
+    unsafe extern "system" fn handle(exceptioninfo: *mut EXCEPTION_POINTERS) -> i32 {
+        if (*(*exceptioninfo).ExceptionRecord).ExceptionCode != EXCEPTION_ACCESS_VIOLATION {
+            return ExceptionContinueSearch.0;
+        }
+        CONTEXT.as_mut().unwrap().panic(ERR_ILLEGAL_MEMORY_ACCESS);
+    }
+}
 
 fn main() {
     let mut cmd = Command::new("urban")
         .bin_name("urban")
         .subcommand_required(true)
         .subcommands([
-            command!("version").alias("v"),
-            command!("run").alias("r").args([
+            command!("version").alias("v").about("Shows the version"),
+            command!("run").alias("r").about("Runs a binary").args([
                 arg!([BINARY] "The file to execute")
                     .required(true)
                     .value_parser(value_parser!(PathBuf)),
-                arg!(--noverify "Execute code in a noverify context").action(ArgAction::SetTrue),
+                arg!(--noverify "Execute code in a noverify context (unused)")
+                    .action(ArgAction::SetTrue),
             ]),
             command!("compile").alias("c").args([
                 arg!([SOURCE] "The sourcefile to compile")
@@ -66,23 +102,15 @@ fn main() {
                 cmd.error(ErrorKind::Format, "Binary is not executable")
                     .exit();
             }
-            if matches.get_flag("noverify") {
-                let mut ctx = UnsafeContext::new(
+            setup_handlers();
+            unsafe {
+                CONTEXT = Some(UnsafeContext::new(
                     (content.as_mut_ptr() as usize + 16) as _,
                     (content.as_mut_ptr() as usize + 16 + header.entrypoint as usize) as _,
-                );
+                ));
+                let ctx = CONTEXT.as_mut().unwrap();
                 ctx.load_vmod(&Util);
                 loop {
-                    ctx.decode_instruction()
-                }
-            } else {
-                let mut ctx = SafeContext::new(
-                    (content.as_mut_ptr() as usize + 16) as _,
-                    (content.as_mut_ptr() as usize + 16 + header.entrypoint as usize) as _,
-                    content.len() - 16,
-                );
-                ctx.load_vmod(&Util);
-                while !ctx.has_halted() {
                     ctx.decode_instruction()
                 }
             }
