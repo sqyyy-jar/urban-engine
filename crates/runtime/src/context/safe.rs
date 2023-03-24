@@ -1,3 +1,5 @@
+#![deprecated(note = "Replaced by noverify context")]
+
 use std::{
     alloc,
     collections::HashMap,

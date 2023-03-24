@@ -20,6 +20,7 @@ pub struct UnsafeContext {
     pub mem_base: *mut u32,
     pub mem: *mut u32,
     pub registers: [Value; 32],
+    pub call_stack: Vec<usize>,
     pub terminal: Terminal,
     pub ntable: Vec<fn(&mut Self)>,
     pub vtable: HashMap<usize, fn(&mut Self)>,
@@ -31,6 +32,7 @@ impl UnsafeContext {
             mem_base,
             mem: cursor,
             registers: [Value { uint: 0 }; 32],
+            call_stack: Vec::with_capacity(1024 * 256),
             terminal: Terminal::default(),
             ntable: Vec::with_capacity(0),
             vtable: HashMap::with_capacity(0),
@@ -224,9 +226,7 @@ impl InstructionBus for UnsafeContext {
     #[inline(always)]
     fn l0_branch_l(&mut self, insn: u32) {
         let dst = signed_immediate::<27>(insn, 0);
-        self.registers[30] = Value {
-            size: self.mem as usize + 4,
-        };
+        self.call_stack.push(self.mem as usize + 4);
         self.set_counter(unsafe { self.mem.offset(dst as _) });
     }
 
@@ -240,9 +240,7 @@ impl InstructionBus for UnsafeContext {
     #[inline(always)]
     fn l0_branch_l_ld(&mut self, insn: u32) {
         let src = signed_immediate::<27>(insn, 0);
-        self.registers[30] = Value {
-            size: self.mem as usize + 4,
-        };
+        self.call_stack.push(self.mem as usize + 4);
         let res = unsafe { *(self.mem.offset(src as _) as *mut _) };
         self.set_counter(res);
     }
@@ -843,9 +841,7 @@ impl InstructionBus for UnsafeContext {
     #[inline(always)]
     fn l4_branch_l(&mut self, insn: u32) {
         let dst = reg(insn, 0);
-        self.registers[30] = Value {
-            size: self.mem as usize + 4,
-        };
+        self.call_stack.push(self.mem as usize + 4);
         self.set_counter(unsafe { self.registers[dst].size } as _);
     }
 
@@ -858,9 +854,7 @@ impl InstructionBus for UnsafeContext {
     #[inline(always)]
     fn l4_branch_l_ld(&mut self, insn: u32) {
         let src = reg(insn, 0);
-        self.registers[30] = Value {
-            size: self.mem as usize + 4,
-        };
+        self.call_stack.push(self.mem as usize + 4);
         self.set_counter(unsafe { self.registers[src].size } as *mut _);
     }
 
@@ -873,9 +867,7 @@ impl InstructionBus for UnsafeContext {
     #[inline(always)]
     fn l4_branch_l_bo(&mut self, insn: u32) {
         let dst = reg(insn, 0);
-        self.registers[30] = Value {
-            size: self.mem as usize + 4,
-        };
+        self.call_stack.push(self.mem as usize + 4);
         self.set_counter(unsafe { self.mem_base as isize + self.registers[dst].isize } as _);
     }
 
@@ -903,9 +895,7 @@ impl InstructionBus for UnsafeContext {
     #[inline(always)]
     fn l4_branch_l_ld_bo(&mut self, insn: u32) {
         let src = reg(insn, 0);
-        self.registers[30] = Value {
-            size: self.mem as usize + 4,
-        };
+        self.call_stack.push(self.mem as usize + 4);
         let res = unsafe { *(self.registers[src].size as *mut isize) };
         self.set_counter((self.mem_base as isize + res) as _);
     }
@@ -913,9 +903,7 @@ impl InstructionBus for UnsafeContext {
     #[inline(always)]
     fn l4_branch_l_bo_ld(&mut self, insn: u32) {
         let src = reg(insn, 0);
-        self.registers[30] = Value {
-            size: self.mem as usize + 4,
-        };
+        self.call_stack.push(self.mem as usize + 4);
         let res = unsafe { *((self.mem_base as isize + self.registers[src].isize) as *mut usize) };
         self.set_counter(res as _);
     }
@@ -923,9 +911,7 @@ impl InstructionBus for UnsafeContext {
     #[inline(always)]
     fn l4_branch_l_bo_ld_bo(&mut self, insn: u32) {
         let src = reg(insn, 0);
-        self.registers[30] = Value {
-            size: self.mem as usize + 4,
-        };
+        self.call_stack.push(self.mem as usize + 4);
         let res = unsafe { *((self.mem_base as isize + self.registers[src].isize) as *mut isize) };
         self.set_counter((self.mem_base as isize + res) as _);
     }
