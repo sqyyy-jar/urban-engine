@@ -8,7 +8,7 @@ use std::{
 
 use urban_common::{
     bus::InstructionBus,
-    err::{ERR_ILLEGAL_INSN, ERR_ILLEGAL_MEMORY_ACCESS},
+    err::{ERR_CALLSTACK_UNDERFLOW, ERR_ILLEGAL_INSN, ERR_ILLEGAL_MEMORY_ACCESS},
     int::{INT_ALLOC, INT_DEALLOC, INT_READ, INT_WRITE},
 };
 
@@ -70,19 +70,16 @@ impl Context for UnsafeContext {
     }
 
     fn panic(&mut self, error_code: u32) -> ! {
+        const WIDTH: usize = 5;
         eprintln!("Runtime panicked:");
-        for (i, reg) in self.registers.chunks(4).enumerate() {
-            eprintln!(
-                " R{:<2}: 0x{:016x} | R{:<2}: 0x{:016x} | R{:<2}: 0x{:016x} | R{:<2}: 0x{:016x}",
-                i * 4,
-                unsafe { reg[0].uint },
-                i * 4 + 1,
-                unsafe { reg[1].uint },
-                i * 4 + 2,
-                unsafe { reg[2].uint },
-                i * 4 + 3,
-                unsafe { reg[3].uint }
-            );
+        for (i, regs) in self.registers.chunks(WIDTH).enumerate() {
+            for (j, reg) in regs.iter().enumerate() {
+                if j != 0 {
+                    eprint!(" |");
+                }
+                eprint!(" R{:<2}: 0x{:016x}", i * WIDTH + j, unsafe { reg.uint },);
+            }
+            eprintln!();
         }
         match error_code {
             ERR_ILLEGAL_INSN => {
@@ -96,7 +93,15 @@ impl Context for UnsafeContext {
             ERR_ILLEGAL_MEMORY_ACCESS => {
                 eprintln!();
                 eprintln!(
-                    "Illegal memory access in instruction at  address {:?}: 0x{:08x}",
+                    "Illegal memory access in instruction at address {:?}: 0x{:08x}",
+                    self.mem,
+                    unsafe { *self.mem }
+                );
+            }
+            ERR_CALLSTACK_UNDERFLOW => {
+                eprintln!();
+                eprintln!(
+                    "Callstack underflow at address {:?}: 0x{:08x}",
                     self.mem,
                     unsafe { *self.mem }
                 );
