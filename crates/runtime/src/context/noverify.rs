@@ -970,4 +970,11 @@ impl InstructionBus for UnsafeContext {
     fn unknown(&mut self, _insn: u32) {
         self.panic(ERR_ILLEGAL_INSN);
     }
+
+    fn l5_ret(&mut self, _insn: u32) {
+        let Some(ret) = self.call_stack.pop() else {
+            self.panic(ERR_ILLEGAL_INSN);
+        };
+        self.mem = ret as _;
+    }
 }

@@ -2,7 +2,7 @@
 // It is not intended for manual editing.
 
 /**
- * This class contains opcode constants for ISA version {@code 1.2.0-pre}.
+ * This class contains opcode constants for ISA version {@code 1.3.0-pre}.
  */
 public class OpCodes {
     /**
@@ -405,4 +405,9 @@ public class OpCodes {
      */
     public static final int L5_HALT = 0b111111111111111111111111111_00001;
     public static final int END_L5_HALT = 0b111111111111111111111111111_00001;
+    /**
+     * {@code ret}
+     */
+    public static final int L5_RET = 0b111111111111111111111111111_00010;
+    public static final int END_L5_RET = 0b111111111111111111111111111_00010;
 }
