@@ -9,7 +9,7 @@ use std::{
 use urban_common::{
     bus::InstructionBus,
     err::{ERR_CALLSTACK_UNDERFLOW, ERR_ILLEGAL_INSN, ERR_ILLEGAL_MEMORY_ACCESS},
-    int::{INT_ALLOC, INT_DEALLOC, INT_READ, INT_WRITE},
+    int::{INT_ALLOC, INT_DEALLOC, INT_EXIT, INT_READ, INT_WRITE},
 };
 
 use crate::vmod::VMod;
@@ -535,6 +535,9 @@ impl InstructionBus for UnsafeContext {
                     self.registers[0] = Value { isize: -1 };
                 }
                 self.advance_counter();
+            }
+            INT_EXIT => {
+                exit(unsafe { self.registers[0].int as i32 });
             }
             _ => {
                 self.advance_counter();
