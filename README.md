@@ -7,18 +7,17 @@ It is meant to be a toy project and should not be used for anything serious.
 
 ### Registers
 
-The architecture provides 32 registers, 30 of which are for general purpose use.
+The architecture provides 32 registers, 31 of which are for general purpose use.
 
 This table shows the expected usage for each register:
 
-| Register     | Purpose                                                                                                                     |
-|:------------:|-----------------------------------------------------------------------------------------------------------------------------|
-| `r0 to r7`   | These registers are used for parameter passing between functions. Values need to be saved by the caller.                    |
-| `r8 to r15`  | These registers are temporary. Values need to be saved by the caller.                                                       |
-| `r16 to r23` | These registers are expected to be saved by the callee.                                                                     |
-| `r24 to r29` | These registers do not have any special purpose but may be used in any way.                                                 |
-| `r30`        | This register stores the return address to the calling function. It is automatically modified when using labeled branching. |
-| `r31`        | This register stores the stack pointer. It may be used for other purposes.                                                  |
+|   Register   | Purpose                                                                                                  |
+| :----------: | -------------------------------------------------------------------------------------------------------- |
+|  `r0 to r7`  | These registers are used for parameter passing between functions. Values need to be saved by the caller. |
+| `r8 to r15`  | These registers are temporary. Values need to be saved by the caller.                                    |
+| `r16 to r23` | These registers are expected to be saved by the callee.                                                  |
+| `r24 to r30` | These registers do not have any special purpose but may be used in any way.                              |
+|    `r31`     | This register stores the stack pointer. It may be used for other purposes.                               |
 ### Memory
 
 The memory accessed by the program is the same that is accessed by the runtime,
