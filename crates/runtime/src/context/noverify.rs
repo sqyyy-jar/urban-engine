@@ -339,6 +339,14 @@ impl InstructionBus for UnsafeContext {
     }
 
     #[inline(always)]
+    fn l0_lea(&mut self, insn: u32) {
+        let dst = reg(insn, 0);
+        let offset = signed_immediate::<22>(insn, 5);
+        self.registers[dst].size = unsafe { self.mem.offset(offset as isize) } as usize;
+        self.advance_counter();
+    }
+
+    #[inline(always)]
     fn l1_shl(&mut self, insn: u32) {
         let dst = reg(insn, 0);
         let lhs = reg(insn, 5);

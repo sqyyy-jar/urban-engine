@@ -2,7 +2,7 @@
 // It is not intended for manual editing.
 
 /**
- * This class contains opcode constants for ISA version {@code 1.3.0-pre}.
+ * This class contains opcode constants for ISA version {@code 1.4.0-pre}.
  */
 public class OpCodes {
     /**
@@ -120,6 +120,11 @@ public class OpCodes {
      */
     public static final int L0_BRANCH_NZ = 0b10110_00000_0000000000000000000000;
     public static final int END_L0_BRANCH_NZ = 0b10110_11111_1111111111111111111111;
+    /**
+     * {@code lea Xdst i22}
+     */
+    public static final int L0_LEA = 0b10111_0000000000000000000000_00000;
+    public static final int END_L0_LEA = 0b10111_1111111111111111111111_11111;
     /**
      * {@code shl Xdst Xlhs u11}
      */

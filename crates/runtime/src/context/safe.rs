@@ -1037,4 +1037,8 @@ impl InstructionBus for SafeContext {
     fn l5_ret(&mut self, _insn: u32) {
         self.panic(ERR_ILLEGAL_INSN);
     }
+
+    fn l0_lea(&mut self, _insn: u32) {
+        self.panic(ERR_ILLEGAL_INSN);
+    }
 }
