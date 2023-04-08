@@ -1020,6 +1020,21 @@ impl InstructionBus for SafeContext {
     }
 
     #[inline(always)]
+    fn l4_zero(&mut self, _insn: u32) {
+        self.panic(ERR_ILLEGAL_INSN);
+    }
+
+    #[inline(always)]
+    fn l4_dbg(&mut self, _insn: u32) {
+        self.panic(ERR_ILLEGAL_INSN);
+    }
+
+    #[inline(always)]
+    fn l4_inc(&mut self, _insn: u32) {
+        self.panic(ERR_ILLEGAL_INSN);
+    }
+
+    #[inline(always)]
     fn l5_nop(&mut self, _insn: u32) {
         self.advance_counter();
     }
@@ -1034,10 +1049,12 @@ impl InstructionBus for SafeContext {
         self.panic(ERR_ILLEGAL_INSN);
     }
 
+    #[inline(always)]
     fn l5_ret(&mut self, _insn: u32) {
         self.panic(ERR_ILLEGAL_INSN);
     }
 
+    #[inline(always)]
     fn l0_lea(&mut self, _insn: u32) {
         self.panic(ERR_ILLEGAL_INSN);
     }

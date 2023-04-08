@@ -2,7 +2,7 @@
 // It is not intended for manual editing.
 
 /**
- * This class contains opcode constants for ISA version {@code 1.4.0-pre}.
+ * This class contains opcode constants for ISA version {@code 1.5.0-pre}.
  */
 public class OpCodes {
     /**
@@ -400,6 +400,21 @@ public class OpCodes {
      */
     public static final int L4_LDPC = 0b1111111111111111111111_01111_00000;
     public static final int END_L4_LDPC = 0b1111111111111111111111_01111_11111;
+    /**
+     * {@code zero Xdst}
+     */
+    public static final int L4_ZERO = 0b1111111111111111111111_10000_00000;
+    public static final int END_L4_ZERO = 0b1111111111111111111111_10000_11111;
+    /**
+     * {@code dbg Xreg}
+     */
+    public static final int L4_DBG = 0b1111111111111111111111_10001_00000;
+    public static final int END_L4_DBG = 0b1111111111111111111111_10001_11111;
+    /**
+     * {@code inc Xreg}
+     */
+    public static final int L4_INC = 0b1111111111111111111111_10010_00000;
+    public static final int END_L4_INC = 0b1111111111111111111111_10010_11111;
     /**
      * {@code nop}
      */
