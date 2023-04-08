@@ -976,6 +976,7 @@ impl InstructionBus for UnsafeContext {
     fn l4_zero(&mut self, insn: u32) {
         let value = reg(insn, 0);
         self.registers[value].size = 0;
+        self.advance_counter();
     }
 
     #[inline(always)]
@@ -983,12 +984,14 @@ impl InstructionBus for UnsafeContext {
         let value = reg(insn, 0);
         let dbg_value = unsafe { self.registers[value].size };
         println!("Debug: r{value} = {dbg_value}");
+        self.advance_counter();
     }
 
     #[inline(always)]
     fn l4_inc(&mut self, insn: u32) {
         let value = reg(insn, 0);
         unsafe { self.registers[value].size += 1 };
+        self.advance_counter();
     }
 
     #[inline(always)]
